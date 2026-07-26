@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sL \"https://ideb.net/windows/47-optimizirujte-rabotu-v-jetbrains-ide-s-pomoschju-jetih-poleznyh-plaginov.html\" -A \"Mozilla/5.0\" -o /tmp/ideb_page.html)",
+      "Read(//tmp/**)",
+      "Bash(curl -sL \"https://ideb.net/\" -A \"Mozilla/5.0\" -o /tmp/ideb_home.html)",
+      "Bash(curl -sL --compressed \"https://ideb.net/\" -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" -H \"Accept-Encoding: gzip, deflate, br\" -o /tmp/ideb_home2.html)",
+      "Bash(python3 *)",
+      "Bash(node *)",
+      "Bash(curl -sL --compressed \"https://ideb.net/\" -A \"Mozilla/5.0\" -o ./ideb_home.html)",
+      "Bash(awk 'BEGIN{RS=\"\"} /id=\"preloader\"/' ./ideb_home.html)",
+      "Bash(grep -oE 'id=\"preloader\".{1,800}' ./ideb_home.html)",
+      "Bash(curl -sL --compressed \"https://ideb.net/templates/btpl/css/style-dark.min.css?Dfv7T\" -A \"Mozilla/5.0\" -o ./ideb_style.css)",
+      "Bash(grep -oE 'spin[^{]{0,30}\\\\{from[^}]*\\\\}[^@]*' ./ideb_style.css)",
+      "Bash(curl -sL --compressed \"https://ideb.net/templates/btpl/images/code.webp\" -A \"Mozilla/5.0\" -o ./ideb_code.webp)",
+      "Bash(xargs grep -l \"primaryColor\")",
+      "Bash(git *)",
+      "mcp__filesystem__create_directory",
+      "Bash(npx vue-tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(dotnet build *)",
+      "Bash(Select-Object -Last 25)",
+      "PowerShell(dotnet build *)",
+      "mcp__zread__read_file",
+      "WebSearch",
+      "Bash(dir src\\\\views\\\\_builtin\\\\login\\\\modules)",
+      "PowerShell(pnpm lint *)",
+      "PowerShell(pnpm typecheck *)",
+      "PowerShell(pnpm eslint *)",
+      "PowerShell(pnpm exec *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm exec *)",
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Bash(grep -iE \"login-starsky|builtin.{1,4}login\")",
+      "Bash(git show *)",
+      "Bash(rm -f src/_loading-old-check.ts)"
+    ]
+  }
+}

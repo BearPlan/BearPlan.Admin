@@ -1,0 +1,21 @@
+{
+  "name": "@sa/alova",
+  "version": "1.4.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./mock": "./src/mock.ts",
+    "./adapter-axios": "./src/adapter-axios.ts"
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["./src/*"]
+    }
+  },
+  "dependencies": {
+    "@alova/adapter-axios": "^2.0.17",
+    "@alova/mock": "2.0.18",
+    "@sa/utils": "workspace:*",
+    "alova": "3.4.1"
+  }
+}

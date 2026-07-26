@@ -1,0 +1,277 @@
+<script setup lang="tsx">
+import { ref } from 'vue';
+import { useClipboard } from '@vueuse/core';
+import type { Sort, TableColumnCtx } from 'element-plus';
+import { ElButton, ElInput } from 'element-plus';
+import { useForm, usePagination, useRequest } from '@sa/alova/client';
+import Apis from '@/api';
+import type { I18nDTO, UpdateI18nParam } from '@/api/globals';
+import { OrderTypeEnum } from '@/api/apiEnums';
+import { $t } from '@/locales';
+const { copy, isSupported } = useClipboard();
+const visible = defineModel<boolean>('visible', {
+  required: true,
+  default: false
+});
+
+type DataType = I18nDTO & { isEdit: boolean };
+const keyWord = ref('');
+const sortList = ref<Record<string, OrderTypeEnum>>({ id: OrderTypeEnum.asc });
+/** 获取数据 */
+const {
+  data,
+  page,
+  pageSize,
+  total,
+  loading,
+  send: getData
+  // reload
+} = usePagination(
+  // Method实例获取函数，它将接收page和pageSize，并返回一个Method实例
+  (upPageIndex, upPageSize) =>
+    Apis.I18n.GetPage({
+      params: {
+        PageIndex: upPageIndex,
+        PageSize: upPageSize,
+        SortList: sortList.value,
+        Search: {},
+        StartIndex: 0
+      }
+    }),
+  {
+    watchingStates: [keyWord, sortList],
+    force: true,
+    initialPage: 1, // 初始页码，默认为1
+    initialPageSize: 20, // 初始每页数据条数，默认为10
+    preloadPreviousPage: false, // 是否预加载下一页
+    preloadNextPage: false, // 是否预加载上一页
+    total: res => res.data?.pagerInfo?.totalRowCount,
+    data: res => res.data?.data || []
+  }
+);
+
+/** 提交详情 */
+const {
+  send: handleSubmit
+  // form: formData,
+  // reset: resetFrom,
+  // updateForm
+} = useForm(
+  (_, row) =>
+    (row?.id ? Apis.I18n.Update : Apis.I18n.Add)({
+      data: row,
+      transform: res => {
+        row.isEdit = false;
+        row.id = res.data;
+        window.$message?.success($t('common.updateSuccess'));
+      }
+    }),
+  {
+    immediate: false,
+    resetAfterSubmiting: true,
+    initialForm: {} as UpdateI18nParam
+    // async middleware(_, next) {
+    //   // validate().then(async () => {
+    //   //   await next();
+    //   // });
+    // }
+  }
+);
+
+const { send: handleDelete } = useRequest(
+  ids =>
+    // Apis.TableColumn.delete_delete_configid_tableof({
+    Apis.I18n.Delete({
+      data: ids,
+      transform: (res: any) => {
+        window.$message?.success('删除成功！');
+        getData();
+        return res.data;
+      }
+    }),
+  { force: true, immediate: false }
+);
+
+const columns = ref<Array<Partial<TableColumnCtx<DataType>>>>([
+  {
+    prop: 'key',
+    label: '翻译键',
+    align: 'center',
+    width: 100,
+    formatter: row => {
+      return (
+        <div>
+          {!row.isEdit ? (
+            <el-text onDblclick={() => handleCopy(row)}>{row.key}</el-text>
+          ) : (
+            <div>
+              {' '}
+              <ElInput v-model={row.key} placeholder={$t('common.placeholder')} />{' '}
+            </div>
+          )}
+        </div>
+      );
+    }
+  },
+  {
+    prop: 'zhCn',
+    label: '中文',
+    align: 'center',
+    formatter: row => {
+      return (
+        <div>
+          {!row.isEdit ? (
+            <el-text onDblclick={() => handleCopy(row)}>{row.zhCn}</el-text>
+          ) : (
+            <div>
+              <ElInput v-model={row.zhCn} placeholder={$t('common.placeholder')} />{' '}
+            </div>
+          )}
+        </div>
+      );
+    }
+  },
+  {
+    prop: 'enUs',
+    label: '英语',
+    align: 'center',
+    formatter: row => {
+      return (
+        <div onDblclick={() => handleCopy(row)}>
+          {!row.isEdit ? (
+            <el-text onDblclick={() => handleCopy(row)}>{row.enUs}</el-text>
+          ) : (
+            <div>
+              <ElInput v-model={row.enUs} placeholder={$t('common.placeholder')} />{' '}
+            </div>
+          )}
+        </div>
+      );
+    }
+  },
+  {
+    prop: 'use',
+    label: '操作',
+    align: 'center',
+    formatter: row => (
+      <div class="flex-center gap-8px">
+        {!row.isEdit ? (
+          <div>
+            <ElButton
+              type="primary"
+              plain
+              size="small"
+              onClick={() => {
+                row.isEdit = !row.isEdit;
+              }}
+            >
+              编辑
+            </ElButton>
+
+            <ElButton type="danger" plain size="small" onClick={() => handleDelete([row.id])}>
+              删除
+            </ElButton>
+          </div>
+        ) : (
+          <ElButton
+            type="primary"
+            plain
+            size="small"
+            onClick={() => {
+              submit(row);
+            }}
+          >
+            保存
+          </ElButton>
+        )}
+      </div>
+    )
+  }
+]);
+const sortChange = ({ prop, order }: Sort) => {
+  sortList.value = {};
+  sortList.value[prop] = (order?.replace('ending', '') as unknown as OrderTypeEnum) || OrderTypeEnum.asc;
+};
+
+const submit = (row: DataType) => {
+  //  updateForm({...row})
+  handleSubmit(row);
+};
+const openAdd = () => {
+  data.value.unshift({
+    id: '',
+    key: '',
+    zhCn: '',
+    enUs: '',
+    source: '',
+    count: 0,
+    isEdit: true
+  } as DataType);
+};
+
+async function handleCopy(row: DataType) {
+  row.isEdit = false;
+  if (!isSupported) {
+    window.$message?.error('您的浏览器不支持Clipboard API');
+    return;
+  }
+
+  if (!row.key) {
+    window.$message?.error('请输入要复制的内容');
+    return;
+  }
+
+  await copy(row.key);
+  window.$message?.success(`复制成功：${row.key}`);
+}
+</script>
+
+<template>
+  <ElDrawer v-model="visible">
+    <template #header>
+      <h4>翻译列表</h4>
+      <div class="flex items-center justify-between">
+        <ElButton type="primary" @click="openAdd">{{ $t('common.add') }}</ElButton>
+      </div>
+    </template>
+    <template #default>
+      <div class="h-[calc(100%-50px)]">
+        <ElTable
+          v-loading="loading"
+          height="100%"
+          border
+          class="sm:h-full"
+          sortable
+          :data="data"
+          row-key="id"
+          @sort-change="sortChange"
+        >
+          <ElTableColumn v-for="(col, index) in columns" :key="index" v-bind="col" />
+        </ElTable>
+      </div>
+
+      <div class="mt-20px flex justify-end">
+        <ElPagination
+          layout="total,prev,pager,next,sizes"
+          :current-page="page"
+          :total="total"
+          :page-size="pageSize"
+          :page-sizes="[...new Set([15, 50, 200, 500, Math.min(total || 1000, 1000)])].sort((a, b) => a - b)"
+          @current-change="val => (page = val)"
+          @size-change="
+            val => {
+              pageSize = val;
+              page = 1;
+            }
+          "
+        />
+        <!-- 删除重复的 ElPagination 组件 -->
+      </div>
+    </template>
+    <template #footer>
+      <div style="flex: auto">
+        <ElButton @click="visible = false">{{ $t('common.cancel') }}</ElButton>
+      </div>
+    </template>
+  </ElDrawer>
+</template>
