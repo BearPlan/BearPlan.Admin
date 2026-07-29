@@ -15,31 +15,20 @@ import { alovaGlobals, swagger } from 'wormajs/plugin';
 declare const __dirname: string;
 const configDir = __dirname;
 
-// 动态 require prettier（esbuild 打包成 cjs 时保持 require 语义，避免 ESM/CJS 互操作问题）
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { format: prettierFormat } = require('prettier') as { format: (src: string, opts: object) => Promise<string> };
-
 /**
- * 用 prettier 格式化 TS 源码（与 worma 生成产物风格一致：单引号、分号、2 空格）。
- * dynamicEnums 在 config 钩子里用 fs.writeFileSync 直接写盘，绕过了 worma 的写盘流程，
- * 故 prettier 不会自动生效——需在此手动格式化，避免后端返回源码的冗余空行、不一致缩进等问题。
- * 格式化失败时回退原内容（不阻断生成，仅在控制台告警）。
+ * 轻量排版：规整后端返回源码 / 本地渲染产物的换行，让生成文件干净易读。
+ *
+ * 不引入 prettier 库——prettier 3.x 是 ESM 包，在 worma 把 worma.config.ts 打包成 cjs
+ * 临时文件执行时，其内部 createRequire(__filename) 会因 __filename 为 undefined 而崩溃。
+ * dynamicEnums 直接 writeFileSync 绕过 worma 写盘流程（worma 自带的 prettier 不生效），
+ * 故在此做最小化字符串处理：CRLF→LF、压缩连续空行、去尾部空白。
  */
-async function formatTs(source: string, filePath: string): Promise<string> {
-  try {
-    return await prettierFormat(source, {
-      parser: 'typescript',
-      filepath: filePath,
-      singleQuote: true,
-      semi: true,
-      useTabs: false,
-      printWidth: 120,
-      endOfLine: 'lf'
-    });
-  } catch (e) {
-    console.warn(`[worma] prettier 格式化失败（${path.basename(filePath)}），回退原内容：${(e as Error).message}`);
-    return source;
-  }
+function tidyTs(source: string): string {
+  return source
+    .replace(/\r\n?/g, '\n') // CRLF → LF（.gitattributes 约定 *.ts eol=lf）
+    .replace(/[ \t]+$/gm, '') // 去行尾空白
+    .replace(/\n{3,}/g, '\n\n') // 连续空行压缩为最多一个
+    .replace(/\n+$/, '\n'); // 保证文件以单个换行结尾
 }
 
 /**
@@ -458,22 +447,23 @@ const dynamicEnums = {
       }
 
       // 全量覆盖 apiEnums.ts：后端返回的每个 value 已是完整的 export enum 代码
-      // 后端运行在 Windows 上，返回的字符串内含 CRLF；统一归一化为 LF，以符合 .gitattributes（*.ts eol=lf）
       const outputDir = path.resolve(configDir, cfg.output ?? 'src/api');
+      const enumsPath = path.resolve(outputDir, 'apiEnums.ts');
+      const enumsDisplayPath = path.resolve(outputDir, 'apiEnumsDisplay.ts');
+      const apiModelsPath = path.resolve(outputDir, 'apiModels.ts');
+
+      // 三个文件直接 writeFileSync 绕过 worma 写盘流程，用 tidyTs 规整换行排版
+      // 后端返回的每个枚举源码成员间常带冗余空行，先逐个压平再合并
       const enumsBody = Object.values(enums)
-        .map(code => code.replace(/\r\n?/g, '\n'))
+        .map(code => code.replace(/\r\n?/g, '\n').replace(/,\n{2,}/g, ',\n'))
         .join('\n\n');
-      fs.writeFileSync(path.resolve(outputDir, 'apiEnums.ts'), `${enumsBody}\n`, 'utf8');
+      fs.writeFileSync(enumsPath, tidyTs(`${enumsBody}\n`), 'utf8');
 
       // 全量覆盖 apiEnumsDisplay.ts：把 Display 映射渲染成 Record<Enum, string> 集合
-      fs.writeFileSync(
-        path.resolve(outputDir, 'apiEnumsDisplay.ts'),
-        `${renderDisplayTypescript(enums, displays)}`,
-        'utf8'
-      );
+      fs.writeFileSync(enumsDisplayPath, tidyTs(renderDisplayTypescript(enums, displays)), 'utf8');
 
       // 全量覆盖 apiModels.ts：把 swagger schema 名渲染为字面量联合类型 SchemaName
-      fs.writeFileSync(path.resolve(outputDir, 'apiModels.ts'), `${renderSchemaNameTypescript(schemaNames)}`, 'utf8');
+      fs.writeFileSync(apiModelsPath, tidyTs(renderSchemaNameTypescript(schemaNames)), 'utf8');
 
       // 设置 externalTypes：让 worma 跳过这些类型的生成，改为引用 ./apiEnums
       enumNames = Object.keys(enums);
