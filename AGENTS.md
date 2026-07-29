@@ -15,7 +15,7 @@
 | 通用知识 | `D:\Obsidian-Vault\vue3`        | `D:\Obsidian-Vault\vue3\index.md`          |
 | 工作方法论 | `D:\Obsidian-Vault\Agent 工作流`  | `D:\Obsidian-Vault\Agent 工作流\index.md`      |
 
-- 本机项目路径：`D:\YouYuan\udo\udo-admin`；官网项目路径：`E:\open-source\VitePress.BearPlan`。
+- 本机项目路径：`E:\open-source\BearPlan.NET\BearPlan.Admin`；官网项目路径：`E:\open-source\VitePress.BearPlan`。
 - 若任务涉及跨模块约束、架构约定、API 契约或历史决策，应先阅读 Obsidian 项目索引，再按索引定位相关文档。
 
 ## 计划与任务
