@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "apis-BearPlan Api 后端接口文档 UDhold": {
+      "source": "D:\\YouYuan\\udo\\udhold-dotnet\\BearPlan.Admin\\src\\api\\aidocs",
+      "sourceType": "local",
+      "computedHash": "c2c1e89d29cff9bedd62598838ee05231a25a702775ca4271b0724c72aef1c70"
+    },
     "worma-guidelines": {
       "source": "alovajs/skills",
       "sourceType": "github",

@@ -20,18 +20,9 @@ import {
 } from './apiEnums';
 
 export const ArchDisplay: Record<ArchEnum, string> = {
-  [ArchEnum.Arm]: 'Arm',
-  [ArchEnum.Arm64]: 'Arm64',
-  [ArchEnum.Ia32]: 'Ia32',
-  [ArchEnum.Loong64]: 'Loong64',
-  [ArchEnum.Mips]: 'Mips',
-  [ArchEnum.Mipsel]: 'Mipsel',
-  [ArchEnum.Ppc]: 'Ppc',
-  [ArchEnum.Ppc64]: 'Ppc64',
-  [ArchEnum.Riscv64]: 'Riscv64',
-  [ArchEnum.S390]: 'S390',
-  [ArchEnum.S390x]: 'S390x',
-  [ArchEnum.X64]: 'X64'
+  [ArchEnum.X64]: 'x64',
+  [ArchEnum.Arm64]: 'ARM64',
+  [ArchEnum.X86]: 'x86'
 };
 
 export const IconTypeDisplay: Record<IconTypeEnum, string> = {
@@ -50,23 +41,10 @@ export const MenuTypeDisplay: Record<MenuTypeEnum, string> = {
   [MenuTypeEnum.Query]: '参数'
 };
 
-export const OrderTypeDisplay: Record<OrderTypeEnum, string> = {
-  [OrderTypeEnum.asc]: 'asc',
-  [OrderTypeEnum.desc]: 'desc'
-};
-
 export const PlatformDisplay: Record<PlatformEnum, string> = {
-  [PlatformEnum.Aix]: 'Aix',
-  [PlatformEnum.Android]: 'Android',
-  [PlatformEnum.Darwin]: 'Darwin',
-  [PlatformEnum.FreeBSD]: 'FreeBSD',
-  [PlatformEnum.Haiku]: 'Haiku',
-  [PlatformEnum.Linux]: 'Linux',
-  [PlatformEnum.OpenBSD]: 'OpenBSD',
-  [PlatformEnum.SunOS]: 'SunOS',
-  [PlatformEnum.Win32]: 'Win32',
-  [PlatformEnum.Cygwin]: 'Cygwin',
-  [PlatformEnum.NetBSD]: 'NetBSD'
+  [PlatformEnum.Win32]: 'Windows',
+  [PlatformEnum.Darwin]: 'macOS',
+  [PlatformEnum.Linux]: 'Linux'
 };
 
 export const SexDisplay: Record<SexEnum, string> = {
@@ -104,12 +82,13 @@ export const VersionDisplay: Record<VersionEnum, string> = {
   [VersionEnum.App]: '移动端/微信小程序/钉钉/H5',
   [VersionEnum.Site]: '官网',
   [VersionEnum.UDhold]: 'UDhold',
-  [VersionEnum.Plugin]: '插件'
+  [VersionEnum.Plugin]: '插件',
+  [VersionEnum.WebDav]: '网盘'
 };
 
 export const VersionStatusDisplay: Record<VersionStatusEnum, string> = {
-  [VersionStatusEnum.Draft]: 'Draft',
-  [VersionStatusEnum.Published]: 'Published',
-  [VersionStatusEnum.Deprecated]: 'Deprecated',
-  [VersionStatusEnum.Developer]: 'Developer'
+  [VersionStatusEnum.Draft]: '草稿',
+  [VersionStatusEnum.Developer]: '开发者预览',
+  [VersionStatusEnum.Published]: '已发布',
+  [VersionStatusEnum.Deprecated]: '已弃用'
 };

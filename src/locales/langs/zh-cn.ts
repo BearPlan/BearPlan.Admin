@@ -62,7 +62,8 @@ const local: App.I18n.Schema = {
     NoLike: '模糊查询取反',
     EqualNull: '等于null',
     InLike: '多个like',
-    Range: '区间'
+    Range: '区间',
+    RangeDate: '区间（日期）'
   },
   system: {
     title: 'BearPlan 管理系统',

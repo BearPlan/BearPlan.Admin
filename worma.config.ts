@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { defineConfig } from 'wormajs';
 import type { GeneratorConfig } from 'wormajs';
-import { alovaGlobals, platform } from 'wormajs/plugin';
+import { alovaGlobals, swagger } from 'wormajs/plugin';
 
 /**
  * 配置文件所在目录（BearPlan.Admin/）。
@@ -14,6 +14,33 @@ import { alovaGlobals, platform } from 'wormajs/plugin';
 // eslint-disable-next-line no-underscore-dangle
 declare const __dirname: string;
 const configDir = __dirname;
+
+// 动态 require prettier（esbuild 打包成 cjs 时保持 require 语义，避免 ESM/CJS 互操作问题）
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { format: prettierFormat } = require('prettier') as { format: (src: string, opts: object) => Promise<string> };
+
+/**
+ * 用 prettier 格式化 TS 源码（与 worma 生成产物风格一致：单引号、分号、2 空格）。
+ * dynamicEnums 在 config 钩子里用 fs.writeFileSync 直接写盘，绕过了 worma 的写盘流程，
+ * 故 prettier 不会自动生效——需在此手动格式化，避免后端返回源码的冗余空行、不一致缩进等问题。
+ * 格式化失败时回退原内容（不阻断生成，仅在控制台告警）。
+ */
+async function formatTs(source: string, filePath: string): Promise<string> {
+  try {
+    return await prettierFormat(source, {
+      parser: 'typescript',
+      filepath: filePath,
+      singleQuote: true,
+      semi: true,
+      useTabs: false,
+      printWidth: 120,
+      endOfLine: 'lf'
+    });
+  } catch (e) {
+    console.warn(`[worma] prettier 格式化失败（${path.basename(filePath)}），回退原内容：${(e as Error).message}`);
+    return source;
+  }
+}
 
 /**
  * 动态枚举插件：替代 importType，每次生成时按需同步到三个文件：
@@ -43,6 +70,7 @@ const configDir = __dirname;
  * 注意：alova VS Code 扩展会在短时间内高频反复调用 readConfig（每次都会重跑 config 钩子），
  * 故用进程内缓存 + 时间窗口（60s）复用结果，避免重复请求后端触发限流（HTTP 429）。
  */
+
 /**
  * Display 接口返回的单个枚举成员项（与后端 EnumDisplayItem 对齐）。
  */
@@ -51,6 +79,21 @@ interface EnumDisplayItem {
   value: number;
   display: string;
 }
+
+/**
+ * 不在 swagger schema、后端反射接口也未覆盖，但前端大量引用（OrderTypeEnum.asc / getEnumValue 遍历）
+ * 的枚举，在此本地定义源码，生成时注入 apiEnums.ts，与后端反射枚举一视同仁。
+ * 新增此类枚举时，同步在 displays 里补 Display 映射即可（也可省略，消费方回退到成员名）。
+ */
+const LOCAL_ENUM_SOURCES: Record<string, string> = {
+  // 后端 BearPlan.Core.Enums.OrderTypeEnum：asc=1 正序 / desc=2 倒序，用于表格排序 sortList
+  OrderTypeEnum: `export enum OrderTypeEnum {
+  /// <summary>正序</summary>
+  asc = 1,
+  /// <summary>倒序</summary>
+  desc = 2,
+}`
+};
 
 let enumNames: string[] = [];
 let enumsCache: {
@@ -200,7 +243,7 @@ function renderDisplayTypescript(enums: Record<string, string>, displays: Record
   const escape = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
   const blocks: string[] = [];
-  for (const enumName of enumNames) {
+  for (const enumName of sortedEnumNames) {
     const items = displays[enumName];
     const members = parseEnumMembers(enums[enumName]);
     // 无 Display 数据或无成员解析结果：跳过该枚举（不在 apiEnumsDisplay.ts 中出现，消费方按需回退到 apiEnums）
@@ -330,16 +373,33 @@ const dynamicEnums = {
         displays = enumsCache.displays;
         schemaNames = enumsCache.schemaNames;
       } else {
-        // cfg.input 即 swagger.json 地址，同时推导出 API 根地址
-        const swaggerUrl = cfg.input!;
+        // cfg.input 由 swagger() 平台插件写入，是候选 URL 数组（string[]）或字符串。
+        // swagger() 按 OAS3→Swagger2→base 顺序生成候选，本项目非标准路径下前几个会 404，
+        // 故逐个尝试取首个成功的（与 worma 内部 fetch 逻辑一致），而非盲取数组首元素。
+        const rawInput = cfg.input!;
+        const candidates: string[] = Array.isArray(rawInput) ? rawInput : [rawInput];
+        const headers = { 'api-version': '1.0' };
+
+        let swagger: any;
+        let swaggerUrl = '';
+        for (const url of candidates) {
+          try {
+            const resp = await fetch(url, { headers });
+            if (resp.ok) {
+              swagger = await resp.json();
+              swaggerUrl = url;
+              break;
+            }
+          } catch {
+            // 网络错误继续尝试下一个候选
+          }
+        }
+        if (!swagger) {
+          throw new Error(`所有 swagger 候选 URL 均不可达：${candidates.join(', ')}`);
+        }
         const base = new URL(swaggerUrl).origin;
 
-        // 1) 读 swagger.json，提取被 API 引用的枚举名
-        const swaggerResp = await fetch(swaggerUrl, { headers: { 'api-version': '1.0' } });
-        if (!swaggerResp.ok) {
-          throw new Error(`swagger HTTP ${swaggerResp.status}`);
-        }
-        const swagger = await swaggerResp.json();
+        // 1) 从已读 swagger 提取被 API 引用的枚举名
         const { candidate, referenced } = extractReferencedEnumNames(swagger);
         // 优先用「被引用」子集；为空时回退到候选全集（避免解析异常导致不同步）
         const names = referenced.length > 0 ? referenced : candidate;
@@ -356,7 +416,6 @@ const dynamicEnums = {
         const qs = params.toString();
         const enumsUrl = `${base}/api/Apis/GetByNamesEnums?${qs}`;
         const displaysUrl = `${base}/api/Apis/GetByNamesEnumDisplay?${qs}`;
-        const headers = { 'api-version': '1.0' };
 
         const [enumsResp, displaysResp] = await Promise.all([
           fetch(enumsUrl, { headers }),
@@ -376,18 +435,23 @@ const dynamicEnums = {
         };
         enums = enumsPayload.data ?? {};
         displays = displaysPayload.data ?? {};
+
+        // 合并本地定义的枚举源码（不在 swagger / 后端反射覆盖范围内的枚举，如 OrderTypeEnum）
+        // 这些枚举前端大量引用，必须进入 apiEnums.ts 与 externalTypes
+        for (const [localName, localSrc] of Object.entries(LOCAL_ENUM_SOURCES)) {
+          if (!enums[localName]) {
+            enums[localName] = localSrc;
+          }
+        }
+
         if (Object.keys(enums).length === 0) {
           throw new Error('GetByNamesEnums 返回的 data 为空');
-        }
-        // Display 接口允许部分枚举缺失（后端无 [Display] 时回退成员名，但不应整体为空）
-        if (Object.keys(displays).length === 0) {
-          throw new Error('GetByNamesEnumDisplay 返回的 data 为空');
         }
 
         enumsCache = { enums, displays, schemaNames, at: Date.now() };
         console.log(
           `[worma] apiEnums.ts 已按需同步 ${Object.keys(enums).length} 个枚举` +
-            `（swagger 引用 ${referenced.length}/${candidate.length}）；` +
+            `（swagger 引用 ${referenced.length}/${candidate.length}，本地注入 ${Object.keys(LOCAL_ENUM_SOURCES).length}）；` +
             `apiEnumsDisplay.ts 同步 ${Object.keys(displays).length} 个 Display 映射；` +
             `apiModels.ts 同步 ${schemaNames.length} 个 schema 名`
         );
@@ -421,7 +485,7 @@ const dynamicEnums = {
     }
     return cfg;
   },
-  // beforeFileWrite：在每个文件写盘前触发，清理裸类型块 + 在 globals.d.ts 头部插入动态 import
+  // beforeFileWrite：在每个文件写盘前触发（prettier 之前），清理裸类型块 + 注入枚举 import
   beforeFileWrite: ({ filePath, content }: { filePath: string; content: string }) => {
     if (!filePath.endsWith('globals.d.ts')) {
       return content;
@@ -448,57 +512,53 @@ const dynamicEnums = {
 
 export default defineConfig({
   generator: [
-    // 服务器1
     {
+      output: 'src/api',
+      type: 'ts',
+      defaultRequire: true,
+      // 统一响应包装：后端所有接口返回 ExcutedResult { code, data, msg, success }，
+      // 在 schema 层把原 responses 包进 data 字段（已在 schema 层声明为 ExcutedResult 的接口跳过）。
+      handleApi(apiDescriptor) {
+        // _ref 是 OpenAPI 规范中 $ref 的别名，保留原命名
+        // eslint-disable-next-line no-underscore-dangle
+        if (apiDescriptor?.responses?._ref?.endsWith('ExcutedResult')) {
+          return apiDescriptor;
+        }
+
+        apiDescriptor.responses = {
+          type: 'object',
+          properties: {
+            code: {
+              type: 'string'
+            },
+            data: apiDescriptor.responses,
+            msg: {
+              type: 'string'
+            },
+            success: {
+              type: 'boolean'
+            }
+          },
+          required: ['code', 'data', 'msg', 'success']
+        };
+
+        // 去掉 operationId 中的控制器信息
+        if (apiDescriptor.operationId) {
+          const parts = apiDescriptor.url.split('/')[apiDescriptor.url.split('/').length - 1];
+          apiDescriptor.operationId = `${parts}`;
+        }
+        return apiDescriptor;
+      },
       plugins: [
-        // platform 插件：自动识别 swagger 文档地址（替代旧 config.platform）
-        platform('swagger'),
-        // 配置修改插件：设置 input/output/handleApi 等
-        {
-          name: 'config-modifier',
-          config: ({ config }: { config: GeneratorConfig }) => {
-            // 修改配置
-            config.input = 'http://127.0.0.1:3000/swagger/v1/swagger.json';
-            config.output = 'src/api';
-            config.type = 'ts';
-            config.defaultRequire = true;
-            config.handleApi = apiDescriptor => {
-              // _ref 是 OpenAPI 规范中 $ref 的别名，保留原命名
-              // eslint-disable-next-line no-underscore-dangle
-              if (apiDescriptor?.responses?._ref?.endsWith('ExcutedResult')) {
-                return apiDescriptor;
-              }
-
-              apiDescriptor.responses = {
-                type: 'object',
-                properties: {
-                  code: {
-                    type: 'string'
-                  },
-                  data: apiDescriptor.responses,
-                  msg: {
-                    type: 'string'
-                  },
-                  success: {
-                    type: 'boolean'
-                  }
-                },
-                required: ['code', 'data', 'msg', 'success']
-              };
-
-              // 去掉 operationId 中的控制器信息
-              if (apiDescriptor.operationId) {
-                const parts = apiDescriptor.url.split('/')[apiDescriptor.url.split('/').length - 1];
-                apiDescriptor.operationId = `${parts}`;
-              }
-              return apiDescriptor;
-            };
-
-            return config;
-          }
-        },
-        // 动态枚举插件：放最后，确保 config 钩子能拿到 config-modifier 设置的 cfg.input
+        // swagger 平台插件：传入完整 swagger.json 地址，自动写入 config.input（候选 URL 数组）。
+        // 注意：本项目 swagger 在非标准路径 /swagger/v4/，swagger() 的标准候选（/openapi.json、
+        // /v2/swagger.json 等）会 404，靠最后一个「base 原样」候选命中——接受这点 fallback 开销。
+        // 必须排在 dynamicEnums 之前，确保 dynamicEnums 的 config 钩子能读到 swagger 写入的 input。
+        swagger('https://bearplan.net/swagger/v1/swagger.json'),
+        // 动态枚举插件：config 钩子读 cfg.input（由 swagger 插件写入）拉取后端枚举
         dynamicEnums,
+        // aiDoc 插件：生成 AI 可读接口文档（aidocs 目录），不自动安装 skill
+        // aiDoc({ installSkill: false }),
         // 模板插件：显式指定全局挂载模式（alovaGlobals），生成 createApis/apiDefinitions/globals.d.ts/index
         alovaGlobals()
       ]

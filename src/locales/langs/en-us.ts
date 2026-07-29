@@ -62,7 +62,8 @@ const local: App.I18n.Schema = {
     NoLike: 'NoLike',
     EqualNull: 'EqualNull',
     InLike: 'InLike',
-    Range: 'Range'
+    Range: 'Range',
+    RangeDate: 'Range (Date)'
   },
   system: {
     title: 'Bear.Admin',

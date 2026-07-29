@@ -38,7 +38,6 @@
     "commit:zh": "sa git-commit -l=zh-cn",
     "dev": "vite --mode test",
     "dev:prod": "vite --mode prod",
-    "gen": "worma gen",
     "gen-route": "sa gen-route",
     "generate:components": "tsx src/views/form-designer/crawler/generate-components.ts",
     "lint": "eslint . --fix",
@@ -135,7 +134,7 @@
     "vite-plugin-vue-devtools": "8.0.5",
     "vue-eslint-parser": "10.2.0",
     "vue-tsc": "3.2.2",
-    "wormajs": "0.0.2-beta.2"
+    "wormajs": "0.2.5"
   },
   "simple-git-hooks": {
     "commit-msg": "pnpm sa git-commit-verify",
