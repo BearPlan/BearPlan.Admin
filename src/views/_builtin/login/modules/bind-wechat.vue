@@ -89,19 +89,21 @@ const { send: loginByWeixin } = useRequest(
 
 // 收到扫码状态：终态(Confirmed/Unbound/Expired)处理后关闭连接
 onMessage(event => {
-  const msg = String(event.data || '').trim() as ScanStatus;
+  const msg = String(event.data || '').trim();
   if (!msg) return;
-  status.value = msg;
+  // Unbound 可能带 openId 后缀（Unbound:{openId}），状态名取冒号前
+  const state = msg.split(':')[0] as ScanStatus;
+  status.value = state;
 
   // 已确认登录：用 ticket 换取 Token
-  if (msg === 'Confirmed') {
+  if (state === 'Confirmed') {
     closeStream();
     loginByWeixin(event.args[0]);
     return;
   }
 
   // 未绑定 / 已过期：关闭连接，提示用户刷新
-  if (msg === 'Unbound' || msg === 'Expired') {
+  if (state === 'Unbound' || state === 'Expired') {
     closeStream();
   }
 });
