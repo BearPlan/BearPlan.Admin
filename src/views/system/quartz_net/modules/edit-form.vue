@@ -2,15 +2,15 @@
 import { computed } from 'vue';
 import { useForm, useRequest } from 'alova/client';
 import Apis from '@/api';
-import type { UpdateYouCertParam } from '@/api/globals';
+import type { UpdateQuartzNetParam } from '@/api/globals';
 import { useForm as useCommonForm, useFormRules } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'EditForm'
+  name: 'QuartzNetEditForm'
 });
 
-type FormType = UpdateYouCertParam;
+type FormType = UpdateQuartzNetParam;
 
 const visible = defineModel<boolean>('visible', {
   required: true,
@@ -18,13 +18,8 @@ const visible = defineModel<boolean>('visible', {
 });
 
 const { formRef, validate, restoreValidation } = useCommonForm();
+// 规则验证获取对象
 const { defaultRequiredRule } = useFormRules();
-type RuleKey = keyof FormType;
-const rules: Partial<Record<RuleKey, App.Global.FormRule | App.Global.FormRule[]>> = {
-  name: [defaultRequiredRule],
-  group: [defaultRequiredRule],
-  sort: [defaultRequiredRule]
-};
 
 interface Emits {
   (e: 'reload', row: any): any;
@@ -39,36 +34,37 @@ const {
   updateForm
 } = useForm(
   form =>
-    (form.id ? Apis.YouCert.Update : Apis.YouCert.Add)({
+    (form.id ? Apis.QuartzNet.Update : Apis.QuartzNet.Add)({
       data: form,
-      transform: res => {
-        updateForm(res.data as unknown as FormType);
+      transform: _ => {
         window.$message?.success($t('common.updateSuccess'));
+        visible.value = false;
         emit('reload', form);
       }
     }),
   {
     immediate: false,
     resetAfterSubmiting: true,
+    // 只初始化表单涉及的配置字段；runTimes/startTime/endTime 为运行时统计字段，编辑时由 GetInfo 回填
     initialForm: {
-      id: '',
-      createBy: null,
-      createTime: '',
-      updateBy: null,
-      updateTime: '',
-      isDeleted: false,
-      name: null,
-      description: null,
-      url: null,
-      icon: null,
-      group: null,
-      sort: 0,
-      isAudit: null,
-      isImages: null,
-      isCode: null,
-      score: 0
+      id: null,
+      taskName: '',
+      taskGroup: '',
+      triggerType: 1,
+      cron: '',
+      intervalSecond: 0,
+      cycleRunTimes: 0,
+      assemblyName: '',
+      className: '',
+      runParams: '',
+      principal: '',
+      alertEmail: '',
+      pauseAfterFailure: false,
+      enabled: true,
+      description: ''
     } as unknown as FormType,
     async middleware(ctx, next) {
+      // 校验通过才发起提交，完成后复位按钮 loading
       validate().then(async () => {
         await next();
         ctx.proxyStates.loading.v = false;
@@ -77,45 +73,47 @@ const {
   }
 );
 
+type RuleKey = keyof FormType;
+const rules: Partial<Record<RuleKey, App.Global.FormRule | App.Global.FormRule[]>> = {
+  taskName: defaultRequiredRule,
+  taskGroup: defaultRequiredRule,
+  assemblyName: defaultRequiredRule,
+  className: defaultRequiredRule,
+  // Cron 表达式仅表达式触发模式下必填
+  cron: [
+    {
+      validator: (_rule, value, callback) => {
+        if (formData.value.triggerType === 1 && !value) callback(new Error('请输入Cron表达式'));
+        else callback();
+      },
+      trigger: 'blur'
+    }
+  ],
+  // 间隔秒数仅间隔触发模式下必填
+  intervalSecond: [
+    {
+      validator: (_rule, value, callback) => {
+        if (formData.value.triggerType === 2 && !value) callback(new Error('请输入间隔秒数'));
+        else callback();
+      },
+      trigger: 'blur'
+    }
+  ]
+};
 /** 获取详情 */
 const { send: getInfo } = useRequest(
   id =>
-    Apis.YouCert.GetInfo({
+    Apis.QuartzNet.GetInfo({
       params: { id },
       transform: res => {
-        const data = res.data as unknown as FormType;
-        updateForm(data);
+        updateForm(res.data as unknown as FormType);
       }
     }),
   { force: true, immediate: false }
 );
-
 const title = computed(() => {
   return formData.value.id ? $t('common.edit') : $t('common.add');
 });
-
-// 处理布尔值的 null 值问题
-const isAuditComputed = computed({
-  get: () => formData.value.isAudit ?? false,
-  set: (value: boolean) => {
-    formData.value.isAudit = value;
-  }
-});
-
-const isImagesComputed = computed({
-  get: () => formData.value.isImages ?? false,
-  set: (value: boolean) => {
-    formData.value.isImages = value;
-  }
-});
-
-const isCodeComputed = computed({
-  get: () => formData.value.isCode ?? false,
-  set: (value: boolean) => {
-    formData.value.isCode = value;
-  }
-});
-
 // 打开
 const openForm = async (_parentId: string | null, id?: string) => {
   visible.value = true;
@@ -136,96 +134,93 @@ defineExpose({
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-700px">
-    <ElScrollbar class="h-500px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="120">
-        <ElRow :gutter="20">
-          <!-- 基本信息 -->
-          <ElCol :span="24">
-            <div class="mb-12px mt-8px text-16px font-bold">基本信息</div>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="名称" prop="name">
-              <ElInput v-model="formData.name" :placeholder="$t('common.placeholder') + '名称'" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="分组" prop="group">
-              <ElInput v-model="formData.group" :placeholder="$t('common.placeholder') + '分组'" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="排序" prop="sort">
-              <ElInputNumber
-                v-model="formData.sort"
-                :placeholder="$t('common.placeholder') + '排序'"
-                class="w-full"
-                :min="0"
-              />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="分数" prop="score">
-              <ElInputNumber
-                v-model="formData.score"
-                :placeholder="$t('common.placeholder') + '分数'"
-                class="w-full"
-                :min="0"
-                :precision="2"
-              />
-            </ElFormItem>
-          </ElCol>
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-900px">
+    <ElScrollbar class="h-480px pr-20px">
+      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="110">
+        <ElFormItem label="任务名称" prop="taskName">
+          <ElInput v-model="formData.taskName" :placeholder="$t('common.placeholder') + '任务名称'" />
+        </ElFormItem>
 
-          <!-- 链接信息 -->
-          <ElCol :span="24">
-            <div class="mb-12px mt-8px text-16px font-bold">链接信息</div>
-          </ElCol>
-          <ElCol :span="24">
-            <ElFormItem label="链接" prop="url">
-              <ElInput v-model="formData.url" :placeholder="$t('common.placeholder') + '链接地址'" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="24">
-            <ElFormItem label="图标" prop="icon">
-              <ElInput v-model="formData.icon" :placeholder="$t('common.placeholder') + '图标地址'" />
-            </ElFormItem>
-          </ElCol>
+        <ElFormItem label="任务分组" prop="taskGroup">
+          <ElInput v-model="formData.taskGroup" :placeholder="$t('common.placeholder') + '任务分组'" />
+        </ElFormItem>
 
-          <!-- 设置 -->
-          <ElCol :span="24">
-            <div class="mb-12px mt-8px text-16px font-bold">设置</div>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="是否审核" prop="isAudit">
-              <ElSwitch v-model="isAuditComputed" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="是否上传附件" prop="isImages">
-              <ElSwitch v-model="isImagesComputed" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="是否需要编码" prop="isCode">
-              <ElSwitch v-model="isCodeComputed" />
-            </ElFormItem>
-          </ElCol>
+        <ElFormItem label="触发类型" prop="triggerType">
+          <ElRadioGroup v-model="formData.triggerType">
+            <ElRadio :value="1" label="Cron表达式" />
+            <ElRadio :value="2" label="间隔" />
+          </ElRadioGroup>
+        </ElFormItem>
 
-          <!-- 描述 -->
-          <ElCol :span="24">
-            <div class="mb-12px mt-8px text-16px font-bold">描述</div>
-          </ElCol>
-          <ElCol :span="24">
-            <ElFormItem label="描述" prop="description">
-              <ElInput
-                v-model="formData.description"
-                type="textarea"
-                :rows="4"
-                :placeholder="$t('common.placeholder') + '描述'"
-              />
-            </ElFormItem>
-          </ElCol>
-        </ElRow>
+        <ElFormItem v-if="formData.triggerType === 1" label="Cron表达式" prop="cron">
+          <ElInput v-model="formData.cron" placeholder="0/5 * * * * ?" />
+        </ElFormItem>
+
+        <ElFormItem v-if="formData.triggerType === 2" label="间隔秒数" prop="intervalSecond">
+          <ElInputNumber
+            v-model="formData.intervalSecond"
+            class="w-full"
+            :min="1"
+            :placeholder="$t('common.placeholder') + '间隔秒数'"
+          />
+        </ElFormItem>
+
+        <ElFormItem label="循环次数" prop="cycleRunTimes">
+          <ElInputNumber
+            v-model="formData.cycleRunTimes"
+            class="w-full"
+            :min="0"
+            :placeholder="$t('common.placeholder') + '循环次数（0为不限）'"
+          />
+        </ElFormItem>
+
+        <ElFormItem label="程序集" prop="assemblyName">
+          <ElInput v-model="formData.assemblyName" :placeholder="$t('common.placeholder') + '程序集名称'" />
+        </ElFormItem>
+
+        <ElFormItem label="类型" prop="className">
+          <ElInput v-model="formData.className" :placeholder="$t('common.placeholder') + '类型名称（含命名空间）'" />
+        </ElFormItem>
+
+        <ElFormItem label="运行参数" prop="runParams">
+          <ElInput
+            v-model="formData.runParams"
+            type="textarea"
+            :rows="3"
+            :placeholder="$t('common.placeholder') + '运行参数（JSON）'"
+          />
+        </ElFormItem>
+
+        <ElFormItem label="负责人" prop="principal">
+          <ElInput v-model="formData.principal" :placeholder="$t('common.placeholder') + '负责人'" />
+        </ElFormItem>
+
+        <ElFormItem label="报警邮箱" prop="alertEmail">
+          <ElInput v-model="formData.alertEmail" :placeholder="$t('common.placeholder') + '报警邮箱'" />
+        </ElFormItem>
+
+        <ElFormItem label="失败后暂停" prop="pauseAfterFailure">
+          <ElRadioGroup v-model="formData.pauseAfterFailure">
+            <ElRadio :value="true" label="是" />
+            <ElRadio :value="false" label="否" />
+          </ElRadioGroup>
+        </ElFormItem>
+
+        <ElFormItem label="启用状态" prop="enabled">
+          <ElRadioGroup v-model="formData.enabled">
+            <ElRadio :value="true" label="启用" />
+            <ElRadio :value="false" label="禁用" />
+          </ElRadioGroup>
+        </ElFormItem>
+
+        <ElFormItem label="描述" prop="description">
+          <ElInput
+            v-model="formData.description"
+            type="textarea"
+            :rows="3"
+            :placeholder="$t('common.placeholder') + '描述'"
+          />
+        </ElFormItem>
       </ElForm>
     </ElScrollbar>
     <template #footer>
