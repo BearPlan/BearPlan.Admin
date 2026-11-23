@@ -1,9 +1,3 @@
-export enum ArchEnum {
-  X64 = 0,
-  Arm64 = 1,
-  X86 = 2,
-}
-
 export enum ColumnTypeEnum {
   自定义 = 0,
   整数 = 1,
@@ -35,61 +29,46 @@ export enum LayoutTypeEnum {
 }
 
 export enum MenuTypeEnum {
+  /// <summary>
+  /// 目录
+  /// </summary>
   Directory = 1,
+  /// <summary>
+  /// 菜单
+  /// </summary>
   Menu = 2,
+  /// <summary>
+  /// 参数
+  /// </summary>
   Query = 3,
 }
 
-export enum PlatformEnum {
-  Win32 = 0,
-  Darwin = 1,
-  Linux = 2,
-}
-
+/// <summary>
+/// 性别
+/// </summary>
 export enum SexEnum {
+  未知 = 0,
+  /// <summary>
+  /// 男
+  /// </summary>
   Man = 1,
+  /// <summary>
+  /// 女
+  /// </summary>
   Girl = 2,
-}
-
-export enum UDholdPluginApprovalActionEnum {
-  Submit = 1,
-  Approve = 2,
-  Reject = 3,
-  Republish = 4,
-}
-
-export enum UDholdPluginMarketStatusEnum {
-  Offline = -1,
-  Online = 1,
-}
-
-export enum UDholdPluginReviewStatusEnum {
-  Pending = 0,
-  Approved = 1,
-  Rejected = -1,
-}
-
-export enum UDholdVersionLogTypeEnum {
-  CheckUpdate = 1,
-  Download = 2,
-  AutoUpdate = 3,
 }
 
 export enum VersionEnum {
   Def = 0,
+  /// <summary>
+  /// Pc端
+  /// </summary>
   Pc = 1,
   App = 2,
   Site = 3,
-  UDhold = 4,
   Plugin = 5,
   WebDav = 6,
-}
-
-export enum VersionStatusEnum {
-  Draft = 0,
-  Developer = 1,
-  Published = 2,
-  Deprecated = 3,
+  DevPlugin = 7,
 }
 
 export enum OrderTypeEnum {

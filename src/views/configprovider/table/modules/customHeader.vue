@@ -7,11 +7,11 @@ import { ConditionalType } from '@/api/sqlSugar';
 import type { ComponentApi } from '../types';
 defineOptions({ name: 'CustomHeader', inheritAttrs: false });
 type Props = {
-  column: Partial<TableColumnCtx<any>> & TableColumn & { headAttrs?: ComponentApi; checked?: boolean };
+  column: Partial<TableColumnCtx<any> & TableColumn & { headAttrs?: ComponentApi; checked?: boolean }>;
 };
 const { column } = defineProps<Props>();
 const searchValue = ref<string>();
-const searchParams = defineModel<UI.SearchParams>({
+const searchParams = defineModel<Record<string, Record<string, string>>>({
   type: Object,
   required: true
 });
@@ -19,21 +19,21 @@ const searchParams = defineModel<UI.SearchParams>({
 watch(
   () => searchParams.value,
   () => {
-    searchValue.value = searchParams.value[column.prop]?.value;
+    searchValue.value = searchParams.value[column.prop as string]?.value;
   },
   { deep: true }
 );
 const confirm = () => {
   if (searchValue.value) {
-    searchParams.value[column.prop] = {
-      key: column.prop,
+    searchParams.value[column.prop as string] = {
+      key: column.prop as string,
       value: searchValue.value as unknown as string,
-      searchType: column.searchType
+      searchType: column.searchType as unknown as string
     };
   } else {
     // 删除
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    delete searchParams.value[column.prop];
+    delete searchParams.value[column.prop as string];
   }
 };
 </script>
@@ -44,7 +44,7 @@ const confirm = () => {
     <ElPopover
       v-if="column.prop"
       placement="bottom"
-      :title="'查询条件：' + $t(`sqlSugar.${ConditionalType[column.searchType]}`)"
+      :title="'查询条件：' + $t(`sqlSugar.${ConditionalType[column.searchType as ConditionalType]}`)"
       width="300"
       trigger="click"
     >
@@ -54,7 +54,7 @@ const confirm = () => {
         :ref="`${column?.prop}Ref`"
         v-model="searchValue"
         :column="column"
-        :placeholder="$t('common.placeholder') + $t(column.label)"
+        :placeholder="$t('common.placeholder') + $t(column.label as string)"
         v-bind="$attrs"
       ></component>
       <!-- confirm 确定框-->
@@ -66,11 +66,11 @@ const confirm = () => {
       <template #reference>
         <div>
           <IconIcRoundSearch />
-          <span :class="searchValue ? 'text-primary' : ''">{{ $t(column.label) }}</span>
+          <span :class="searchValue ? 'text-primary' : ''">{{ $t(column.label as string) }}</span>
         </div>
       </template>
     </ElPopover>
-    <span v-else>{{ $t(column.label) }}</span>
+    <span v-else>{{ $t(column.label as string) }}</span>
   </div>
 </template>
 

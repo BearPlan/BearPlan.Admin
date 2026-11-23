@@ -1,6 +1,6 @@
 <script setup lang="tsx">
-import { computed, h, nextTick, reactive, ref, watch } from 'vue';
-import { ElMessage, ElMessageBox, TabsPaneContext } from 'element-plus';
+import { computed, ref } from 'vue';
+import { ElMessage } from 'element-plus';
 import { useForm, useRequest } from 'alova/client';
 import Apis from '@/api';
 import type { RolePermissionParam } from '@/api/globals';
@@ -28,7 +28,6 @@ const title = computed(() => {
 });
 // 活动标签页
 const activeName = ref('overview');
-console.log(activeName.value);
 
 // 树组件引用
 const menuTreeRef = ref();
@@ -140,14 +139,16 @@ defineExpose({
     <div v-loading="loading && apiDataLoading && loadingRefreshApis" class="permission-content">
       <!-- 权限统计概览 -->
       <div class="permission-stats mb-4">
-        <div class="flex items-center justify-between rounded-lg bg-gray-50 p-4">
+        <div class="flex items-center justify-between rounded-lg bg-[var(--el-fill-color-light)] p-4">
           <div class="flex items-center gap-4">
             <div class="stat-item">
-              <span class="text-sm text-gray-600">菜单权限:</span>
+              <span class="text-sm text-[var(--el-text-color-regular)]">菜单权限:</span>
               <span class="text-blue-600 font-semibold">{{ formData.menuIds?.length }}</span>
             </div>
             <div v-for="(version, index) in getEnumValue(VersionEnum)" :key="index" class="stat-item">
-              <span class="text-sm text-gray-600">{{ VersionDisplay[version as VersionEnum]  }}API:</span>
+              <span class="text-sm text-[var(--el-text-color-regular)]">
+                {{ VersionDisplay[version as VersionEnum]  }}API:
+              </span>
               <span class="text-blue-600 font-semibold">
                 {{  formData.apiIds? formData.apiIds[version as VersionEnum]?.length :0}}
               </span>
@@ -231,7 +232,7 @@ defineExpose({
   gap: 4px;
   padding: 8px 12px;
   border-radius: 6px;
-  background: white;
+  background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
 }
 

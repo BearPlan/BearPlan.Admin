@@ -67,7 +67,8 @@ const {
   send: handleSubmit,
   form: formData,
   reset: resetFrom,
-  updateForm
+  updateForm,
+  loading: subLoading
 } = useForm(
   form =>
     (form.id ? Apis.Menu.Update : Apis.Menu.Add)({
@@ -118,7 +119,7 @@ const {
   }
 );
 /** 获取详情 */
-const { send: getInfo } = useRequest(
+const { send: getInfo, loading: infoLoading } = useRequest(
   id =>
     Apis.Menu.GetInfo({
       params: { id },
@@ -225,6 +226,7 @@ const openI180n = async () => {
 defineExpose({
   openForm
 });
+const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
@@ -517,7 +519,7 @@ defineExpose({
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.cancel') }}</ElButton>
-        <ElButton type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</ElButton>
+        <ElButton type="primary" :loading="loading" @click="handleSubmit">{{ $t('common.confirm') }}</ElButton>
       </ElSpace>
     </template>
   </ElDialog>

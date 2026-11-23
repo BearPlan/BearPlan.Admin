@@ -113,7 +113,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       Apis.Auth.Login({
         data: { ...loginData, password: encrypt(loginData.password || '') },
         transform: async res => {
-          debugger;
           if (res.success) {
             const pass = await loginByToken(res.data);
 

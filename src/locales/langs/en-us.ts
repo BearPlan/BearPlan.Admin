@@ -105,6 +105,7 @@ const local: App.I18n.Schema = {
     noData: 'No Data',
     operate: 'Operate',
     pleaseCheckValue: 'Please check whether the value is valid',
+    preview: 'Preview',
     refresh: 'Refresh',
     reset: 'Reset',
     search: 'Search',
@@ -174,6 +175,9 @@ const local: App.I18n.Schema = {
       },
       multilingual: {
         visible: 'Display multilingual button'
+      },
+      globalSearch: {
+        visible: 'Display Global Search'
       }
     },
     tab: {
@@ -202,15 +206,11 @@ const local: App.I18n.Schema = {
     },
     watermark: {
       visible: 'Watermark Full Screen Visible',
-      text: 'Watermark Text'
+      text: 'Watermark Text',
+      enableUserName: 'Watermark Displays Username'
     },
     themeDrawerTitle: 'Theme Configuration',
     pageFunTitle: 'Page Function',
-    resetCacheStrategy: {
-      title: 'Reset Cache Strategy',
-      close: 'Close Page',
-      refresh: 'Refresh Page'
-    },
     configOperation: {
       copyConfig: 'Copy Config',
       copySuccessMsg: 'Copy Success, Please replace the variable "themeSettings" in "src/theme/settings.ts"',
@@ -281,34 +281,102 @@ const local: App.I18n.Schema = {
         status_Unbound: 'This WeChat is not bound to any account, please bind first',
         status_Expired: 'QR code expired, please click to refresh'
       }
+    },
+    home: {
+      branchDesc: 'A middle-back office solution based on Vue3, Vite and Element Plus',
+      greeting: 'Hello, {name}!',
+      weatherDesc: 'Cloudy to sunny today, 20℃ - 26℃, remember to bring an umbrella',
+      projectCount: 'Project Count',
+      todo: 'Todo',
+      message: 'Message',
+      downloadCount: 'Download Count',
+      registerCount: 'Register Count',
+      schedule: 'Schedule',
+      study: 'Study',
+      work: 'Work',
+      rest: 'Rest',
+      entertainment: 'Entertainment',
+      visitCount: 'Visit Count',
+      turnover: 'Turnover',
+      dealCount: 'Deal Count',
+      projectNews: {
+        title: 'Project News',
+        moreNews: 'More News',
+        desc1: 'Baseline upgraded to .NET 10 and Vue 3.5',
+        desc2: 'New Quartz.NET scheduler management page',
+        desc3: 'System modules unified to standard list page mode',
+        desc4: 'WeChat scan login compatible with Unbound status',
+        desc5: 'Improved table column setting and export experience'
+      },
+      creativity: 'Creativity'
     }
   },
   route: {
     home: 'Home',
-    'form-designer': 'Form Designer',
-    manage: 'System Manage',
-    manage_user: 'User Manage',
-    manage_role: 'Role Manage',
-    manage_menu: 'Menu Manage',
-    manage_apis: 'API Manage',
-    manage_dept: 'Department Manage',
-    manage_job: 'Job Manage',
-    manage_tenant: 'Tenant Manage',
-    'manage_user-detail': 'User Detail',
-    table: 'Table',
-    table_form: 'Form Table',
-    table_test: 'Test Table',
-    table_view: 'View Table',
-    you: 'Personal Center',
-    'you_excel-version': 'Excel Version',
-    you_feedback: 'Feedback',
-    you_financial: 'Financial',
-    you_order: 'Order',
-    login: 'Login',
+    'configprovider_form-designer': 'Form Designer',
+    exception: 'Exception',
+    exception_403: 'Forbidden',
+    exception_404: 'Not Found',
+    exception_500: 'Server Error',
+    document: 'Documentation',
+    document_project: 'Project Doc',
+    'document_project-link': 'Project Link',
+    document_vue: 'Vue Doc',
+    document_vite: 'Vite Doc',
+    document_unocss: 'UnoCSS Doc',
+    document_naive: 'NaiveUI Doc',
+    document_antd: 'AntDesign Doc',
+    'document_element-plus': 'Element Plus Doc',
+    document_alova: 'Alova Doc',
     403: 'No Permission',
     404: 'Page Not Found',
     500: 'Server Error',
-    'iframe-page': 'External Page'
+    background: 'Background',
+    configprovider: 'Component',
+    configprovider_i18n: 'I18n',
+    configprovider_table: 'Table',
+    configprovider_table_form: 'Form Table',
+    configprovider_table_test: 'Test Table',
+    configprovider_table_view: 'View Table',
+    'iframe-page': 'External Page',
+    login: 'Login',
+    manage: 'System Manage',
+    manage_dept: 'Department Manage',
+    manage_job: 'Job Manage',
+    manage_menu: 'Menu Manage',
+    manage_online: 'Online User',
+    manage_online_user: 'Online User',
+    manage_role: 'Role Manage',
+    manage_user: 'User Manage',
+    'manage_user-detail': 'User Detail',
+    message: 'Message',
+    message_email: 'Email',
+    message_email_account: 'Email Account',
+    message_email_message: 'Email Message',
+    message_email_message_template: 'Email Template',
+    message_email_queued: 'Queued Email',
+    monitor: 'Monitor',
+    monitor_audit: 'Audit',
+    monitor_audit_log: 'Audit Log',
+    monitor_exceptio: 'Exception',
+    monitor_exceptio_log: 'Exception Log',
+    monitor_server: 'Server Monitor',
+    monitor_sms: 'SMS Log',
+    monitor_task: 'Task',
+    monitor_task_log: 'Task Log',
+    system: 'System Manage',
+    system_apis: 'API Manage',
+    system_app: 'App Manage',
+    system_app_secret: 'App Secret',
+    system_dict: 'Dict Manage',
+    system_file: 'File Manage',
+    system_file_record: 'File Record',
+    system_quartz: 'Task Schedule',
+    system_quartz_net: 'Scheduler',
+    system_setting: 'System Setting',
+    system_tenant: 'Tenant',
+    system_token: 'Token Manage',
+    system_token_blacklist: 'Token Blacklist'
   },
   dropdown: {
     closeCurrent: 'Close Current',
@@ -332,6 +400,33 @@ const local: App.I18n.Schema = {
   },
   datatable: {
     itemCount: 'Total {total} items'
+  },
+  form: {
+    required: 'Required',
+    userName: {
+      required: 'Please enter user name',
+      invalid: 'User name format is incorrect'
+    },
+    phone: {
+      required: 'Please enter phone number',
+      invalid: 'Phone number format is incorrect'
+    },
+    pwd: {
+      required: 'Please enter password',
+      invalid: 'Password format is incorrect'
+    },
+    confirmPwd: {
+      required: 'Please enter the password again',
+      invalid: 'The two passwords are inconsistent'
+    },
+    code: {
+      required: 'Please enter verification code',
+      invalid: 'Verification code format is incorrect'
+    },
+    email: {
+      required: 'Please enter email',
+      invalid: 'Email format is incorrect'
+    }
   }
 };
 export default local;

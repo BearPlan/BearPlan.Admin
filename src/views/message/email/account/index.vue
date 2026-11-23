@@ -1,53 +1,83 @@
 <script setup lang="tsx">
-import { computed, ref, useTemplateRef } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import type { Sort, TableColumnCtx } from 'element-plus';
-import { ElButton, ElPopconfirm } from 'element-plus';
-import { usePagination, useRequest } from 'alova/client';
+import { ElButton, ElCard, ElPagination, ElPopconfirm, ElSpace, ElTable, ElTableColumn, ElTag } from 'element-plus';
 import Apis from '@/api';
 import type { EmailAccountDTO, TableColumn, TableView } from '@/api/globals';
 import type { OrderTypeEnum } from '@/api/apiEnums';
 import { ConditionalType } from '@/api/sqlSugar';
-import type { SchemaName } from '@/api/apiModels.js';
 import downloadExcel from '@/utils/downloadExcel';
 import createComponent from '@/utils/createComponent';
 import { $t } from '@/locales';
 import CustomHeader from '@/views/configprovider/table/modules/customHeader.vue';
 import EditForm from './modules/edit-form.vue';
+import { usePagination, useRequest } from '~/packages/alova/src/client';
 
 defineOptions({ name: 'EmailAccount' });
 
 const route = useRoute();
+// 表格组件引用（导出 Excel 用）
+const tableRef = ref();
+type DataType = EmailAccountDTO;
 
-// 列配置上下文：供 TableViewSetting 加载/跳转使用
-const tableof: SchemaName = 'EmailAccountDTO';
+// 默认列表字段（文本列 + 表头搜索），进入列设置面板供勾选/排序；后端无列配置时兜底展示
+const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
+  { prop: 'email', label: '邮箱地址', searchType: ConditionalType.Like, checked: true },
+  { prop: 'displayName', label: '显示名称', searchType: ConditionalType.Like, checked: true },
+  { prop: 'host', label: 'SMTP 主机', searchType: ConditionalType.Like, checked: true },
+  { prop: 'port', label: '端口', searchType: ConditionalType.Equal, checked: true },
+  { prop: 'userName', label: '用户名', searchType: ConditionalType.Like, checked: true },
+  {
+    prop: 'enableSsl',
+    label: '启用 SSL',
+    checked: true,
+    // 布尔列不做表头搜索（SearchWhere 的字符串等值对布尔列有语义坑），formatter 渲染为状态标签
+    formatter: row => (
+      <ElTag type={row.enableSsl ? 'success' : 'info'} size="small">
+        {row.enableSsl ? '是' : '否'}
+      </ElTag>
+    )
+  },
+  {
+    prop: 'useDefaultCredentials',
+    label: '默认凭据',
+    checked: true,
+    formatter: row => (
+      <ElTag type={row.useDefaultCredentials ? 'success' : 'info'} size="small">
+        {row.useDefaultCredentials ? '是' : '否'}
+      </ElTag>
+    )
+  }
+  // password 为敏感信息，不进默认列；如需展示可在后端列配置中开启
+];
 
-const tableRef = useTemplateRef('tableRef');
-// 列配置独立为单一数据源：供 TableHeaderOperation 列显隐设置与表格渲染共用
-const tableColumns = ref<Array<TableColumn>>([]);
-const dataTableConfig = ref<UI.DataTableConfig>({ sortList: {} });
-const keyWord = ref('');
-const searchParams = ref<UI.SearchParams>({});
+// columns 仅接受后端返回的原始列配置；columnData 为生效列（初始默认列，loadChange 后合并后端列），供列设置管理与表格渲染
+const columns = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([]);
+// 列设置候选：初始为默认列，loadChange 后合并为「后端配置列 + 默认列」
+const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
+const dataTableConfig = ref<UI.DataTableConfig>({
+  sortList: {}
+});
+// 表头搜索条件
+const searchParams = ref<Record<string, Record<string, string>>>({});
+// 多选行（表格 selection 列联动，供批量删除使用）
 const checkedRowKeys = ref<string[]>([]);
 
-// TableViewSetting 加载完成后填充 columns 与默认排序
+// 表格视图配置加载回调；dataTableConfig 被 deep watch，赋值后触发分页请求
 const loadChange = (table: TableView) => {
-  tableColumns.value =
-    table?.columns
-      ?.filter(item => item.isShow)
-      .map(item => {
-        return { ...item, checked: true, attrs: item.attrs };
-      }) || [];
+  columns.value = (table?.columns || []) as Array<Partial<TableColumnCtx<DataType> & TableColumn>>;
+
+  // 后端列与默认列按 prop 去重合并进 columnData：后端配置优先，checked 跟随后端 isShow/checked，默认列补充后端未配置的字段
+  const backendProps = new Set(columns.value.map(item => item.prop));
+  columnData.value = [...columns.value, ...defaultColumns.filter(item => !backendProps.has(item.prop as string))];
+
   if (dataTableConfig.value) dataTableConfig.value.sortList = table?.sorts || {};
 };
 
-type DateType = EmailAccountDTO;
-
-// 后端列配置：解析 attrs、标记导出列；行尾操作列在模板中单独声明，避免混入后端 DTO 类型
-const columnData = computed<
-  Array<Partial<TableColumnCtx<DateType>> & TableColumn & { checked?: boolean; isExcel?: boolean }>
->(() => {
-  return tableColumns.value
+// 渲染列：按列设置勾选过滤（全不勾选即空表）；attrs 中的渲染函数展开为 Element Plus 列属性
+const tableColumns = computed<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(() => {
+  return columnData.value
     .filter(item => item.checked)
     .map(item => {
       return {
@@ -58,7 +88,7 @@ const columnData = computed<
         prop: item.prop,
         label: $t(item.label as string),
         sortable: 'custom'
-      } as Partial<TableColumnCtx<DateType>> & TableColumn;
+      } as Partial<TableColumnCtx<DataType> & TableColumn>;
     });
 });
 
@@ -79,18 +109,17 @@ const {
         PageIndex: upPageIndex,
         PageSize: upPageSize,
         SortList: dataTableConfig.value.sortList,
-        // swagger 推断为嵌套字典，实际 customHeader 写入的是 { key, value, searchType }，做断言对齐类型
-        Search: searchParams.value as unknown as Record<string, Record<string, string>>
+        Search: searchParams.value
       }
     }),
   {
-    watchingStates: [keyWord, dataTableConfig, searchParams],
+    watchingStates: [dataTableConfig, searchParams],
     force: false,
     immediate: false,
-    initialPage: 1,
-    initialPageSize: 15,
-    preloadPreviousPage: false,
-    preloadNextPage: false,
+    initialPage: 1, // 初始页码，默认为1
+    initialPageSize: 15, // 初始每页数据条数
+    preloadPreviousPage: false, // 是否预加载上一页
+    preloadNextPage: false, // 是否预加载下一页
     total: res => res.data?.pagerInfo?.totalRowCount,
     data: res => res.data?.data || []
   }
@@ -110,20 +139,6 @@ const { send: handleDelete, loading: delLoading } = useRequest(
   { force: true, immediate: false }
 );
 
-/** 打开新增/编辑弹窗：无 id 为新增，有 id 为编辑 */
-const openForm = async (id?: string | null) => {
-  const { instance, on, unmount } = await createComponent(EditForm, { visible: true });
-  instance?.openForm(id);
-  on('reload', () => {
-    getData(page.value, pageSize.value);
-  });
-  on('update:visible', res => {
-    if (!res) {
-      unmount();
-    }
-  });
-};
-
 const sortChange = ({ prop, order }: Sort) => {
   dataTableConfig.value.sortList = {};
   dataTableConfig.value.sortList = { [prop]: order?.replace('ending', '') as unknown as OrderTypeEnum };
@@ -134,7 +149,25 @@ const handleClose = (prop: string) => {
   delete searchParams.value[prop];
 };
 
+// 表格加载与删除请求合并，工具栏刷新动画两者都覆盖
 const loading = computed<boolean>(() => delLoading.value || dataLoading.value);
+
+// 打开编辑/新增：动态挂载编辑表单，提交成功后 reload 列表
+const openForm = async (id: string | null) => {
+  const { instance, on, unmount } = await createComponent(EditForm, {
+    visible: true
+  });
+  instance?.openForm(id);
+  on('reload', () => {
+    reload();
+  });
+
+  on('update:visible', res => {
+    if (!res) {
+      unmount();
+    }
+  });
+};
 </script>
 
 <template>
@@ -143,16 +176,8 @@ const loading = computed<boolean>(() => delLoading.value || dataLoading.value);
       <template #header>
         <div class="flex items-center justify-between">
           <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
-          <TableHeaderOperation
-            v-model:columns="tableColumns"
-            :disabled-delete="checkedRowKeys.length === 0"
-            :loading="loading"
-            @refresh="reload"
-          >
-            <template #prefix>
-              <TableViewSetting :tableof="tableof" @load-change="loadChange"></TableViewSetting>
-            </template>
-            <!-- 新增 -->
+          <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
+            <TableViewSetting tableof="EmailAccountDTO" router="" config-id="" @load-change="loadChange" />
             <ElButton ghost type="primary" @click="openForm(null)">
               <template #icon>
                 <icon-ic-round-plus class="text-icon" />
@@ -175,15 +200,22 @@ const loading = computed<boolean>(() => delLoading.value || dataLoading.value);
               </template>
               {{ $t('导出') }}
             </ElButton>
-          </TableHeaderOperation>
+            <ElButton @click="reload">
+              <template #icon>
+                <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': loading }" />
+              </template>
+              {{ $t('common.refresh') }}
+            </ElButton>
+            <TableColumnSetting v-model:columns="columnData" />
+          </ElSpace>
         </div>
       </template>
 
       <div class="min-h-0 flex flex-col flex-1 p-4">
         <div v-if="Object.keys(searchParams).length > 0" class="mb-3 flex shrink-0 flex-wrap">
           <ElTag v-for="(item, index) in Object.keys(searchParams)" :key="index" closable @close="handleClose(item)">
-            {{ tableColumns.find(column => column.prop == item)?.label }}:
-            {{ $t('sqlSugar.' + ConditionalType[searchParams[item].searchType || 0]) }}
+            {{ columnData.find(column => column.prop == item)?.label }}:
+            {{ $t('sqlSugar.' + ConditionalType[searchParams[item].searchType || 0 as any]) }}
             {{ searchParams[item].value }}
           </ElTag>
         </div>
@@ -196,16 +228,15 @@ const loading = computed<boolean>(() => delLoading.value || dataLoading.value);
             height="100%"
             border
             class="w-full"
-            sortable
             :data="data"
             row-key="id"
             @sort-change="sortChange"
-            @selection-change="(val: any) => (checkedRowKeys = val.map((row: any) => row.id))"
+            @selection-change="(val: Array<DataType>) => (checkedRowKeys = val.map(row => row.id))"
           >
             <ElTableColumn type="selection" width="48" />
-            <ElTableColumn v-for="(column, index) in columnData" :key="index" v-bind="column">
-              <template v-if="column.searchType !== null" #header>
-                <CustomHeader v-model="searchParams" :column="column"></CustomHeader>
+            <ElTableColumn v-for="(item, index) in tableColumns" :key="index" v-bind="item">
+              <template v-if="item.searchType != null" #header>
+                <CustomHeader v-model="searchParams" :column="item" />
               </template>
             </ElTableColumn>
             <ElTableColumn prop="use" label="操作" align="center" width="200" fixed="right">

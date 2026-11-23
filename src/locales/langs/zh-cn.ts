@@ -53,7 +53,7 @@ const local: App.I18n.Schema = {
     LessThan: '小于',
     LessThanOrEqual: '小于等于',
     In: 'In操作',
-    NotIn: '	Not in操作 参数和in一样',
+    NotIn: 'Not in 操作，参数和 in 一样',
     LikeLeft: '左模糊',
     LikeRight: '右模糊',
     NoEqual: '不等于',
@@ -106,6 +106,7 @@ const local: App.I18n.Schema = {
     noData: '无数据',
     operate: '操作',
     pleaseCheckValue: '请检查输入的值是否合法',
+    preview: '预览',
     refresh: '刷新',
     reset: '重置',
     search: '搜索',
@@ -175,6 +176,9 @@ const local: App.I18n.Schema = {
       },
       multilingual: {
         visible: '显示多语言按钮'
+      },
+      globalSearch: {
+        visible: '显示全局搜索'
       }
     },
     tab: {
@@ -203,15 +207,11 @@ const local: App.I18n.Schema = {
     },
     watermark: {
       visible: '显示全屏水印',
-      text: '水印文本'
+      text: '水印文本',
+      enableUserName: '水印显示用户名'
     },
     themeDrawerTitle: '主题配置',
     pageFunTitle: '页面功能',
-    resetCacheStrategy: {
-      title: '重置缓存策略',
-      close: '关闭页面',
-      refresh: '刷新页面'
-    },
     configOperation: {
       copyConfig: '复制配置',
       copySuccessMsg: '复制成功，请替换 src/theme/settings.ts 中的变量 themeSettings',
@@ -282,34 +282,102 @@ const local: App.I18n.Schema = {
         status_Unbound: '该微信号未绑定系统账号，请先绑定',
         status_Expired: '二维码已失效，请点击刷新'
       }
+    },
+    home: {
+      branchDesc: '基于 Vue3、Vite、Element Plus 的中后台解决方案',
+      greeting: '你好，{name}！',
+      weatherDesc: '今天多云转晴，20℃ - 26℃，出门记得带伞哦',
+      projectCount: '项目数量',
+      todo: '待办',
+      message: '消息',
+      downloadCount: '下载量',
+      registerCount: '注册量',
+      schedule: '排班表',
+      study: '学习',
+      work: '工作',
+      rest: '休息',
+      entertainment: '娱乐',
+      visitCount: '访问量',
+      turnover: '成交额',
+      dealCount: '成交量',
+      projectNews: {
+        title: '项目动态',
+        moreNews: '更多动态',
+        desc1: '基线升级至 .NET 10 与 Vue 3.5',
+        desc2: '新增 Quartz.NET 调度任务管理页面',
+        desc3: '系统模块完成标准列表页模式统一',
+        desc4: '微信扫码登录兼容 Unbound 状态',
+        desc5: '优化表格列设置与导出体验'
+      },
+      creativity: '创作'
     }
   },
   route: {
     home: '首页',
-    'form-designer': '表单设计器',
-    manage: '系统管理',
-    manage_user: '用户管理',
-    manage_role: '角色管理',
-    manage_menu: '菜单管理',
-    manage_apis: '接口管理',
-    manage_dept: '部门管理',
-    manage_job: '职位管理',
-    manage_tenant: '租户管理',
-    'manage_user-detail': '用户详情',
-    table: '表格功能',
-    table_form: '表单表格',
-    table_test: '测试表格',
-    table_view: '查看表格',
-    you: '个人中心',
-    'you_excel-version': 'Excel版本',
-    you_feedback: '意见反馈',
-    you_financial: '财务管理',
-    you_order: '订单管理',
-    login: '登录',
+    exception: '异常页',
+    exception_403: '无权限',
+    exception_404: '页面不存在',
+    exception_500: '服务器错误',
+    document: '文档',
+    document_project: '项目文档',
+    'document_project-link': '项目链接',
+    document_vue: 'Vue 文档',
+    document_vite: 'Vite 文档',
+    document_unocss: 'UnoCSS 文档',
+    document_naive: 'NaiveUI 文档',
+    document_antd: 'AntDesign 文档',
+    'document_element-plus': 'Element Plus 文档',
+    document_alova: 'Alova 文档',
     403: '无权限',
     404: '页面不存在',
     500: '服务器错误',
-    'iframe-page': '外部页面'
+    background: '后台',
+    configprovider: '组件功能',
+    'configprovider_form-designer': '表单设计器',
+    configprovider_i18n: '国际化',
+    configprovider_table: '表格功能',
+    configprovider_table_form: '表单表格',
+    configprovider_table_test: '测试表格',
+    configprovider_table_view: '查看表格',
+    'iframe-page': '外部页面',
+    login: '登录',
+    manage: '系统管理',
+    manage_dept: '部门管理',
+    manage_job: '职位管理',
+    manage_menu: '菜单管理',
+    manage_online: '在线用户',
+    manage_online_user: '在线用户',
+    manage_role: '角色管理',
+    manage_user: '用户管理',
+    'manage_user-detail': '用户详情',
+    message: '消息',
+    message_email: '邮件',
+    message_email_account: '邮件账号',
+    message_email_message: '邮件消息',
+    message_email_message_template: '邮件模板',
+    message_email_queued: '邮件队列',
+    monitor: '监控',
+    monitor_audit: '审计',
+    monitor_audit_log: '审计日志',
+    monitor_exceptio: '异常',
+    monitor_exceptio_log: '异常日志',
+    monitor_server: '服务器监控',
+    monitor_sms: '短信日志',
+    monitor_task: '任务',
+    monitor_task_log: '任务日志',
+    system: '系统管理',
+    system_apis: '接口管理',
+    system_app: '应用管理',
+    system_app_secret: '应用密钥',
+    system_dict: '字典管理',
+    system_file: '文件管理',
+    system_file_record: '文件记录',
+    system_quartz: '任务调度',
+    system_quartz_net: '调度任务',
+    system_setting: '系统配置',
+    system_tenant: '多租户',
+    system_token: '令牌管理',
+    system_token_blacklist: '令牌黑名单'
   },
   dropdown: {
     closeCurrent: '关闭',
@@ -333,6 +401,33 @@ const local: App.I18n.Schema = {
   },
   datatable: {
     itemCount: '共 {total} 条'
+  },
+  form: {
+    required: '必填',
+    userName: {
+      required: '请输入用户名',
+      invalid: '用户名格式不正确'
+    },
+    phone: {
+      required: '请输入手机号',
+      invalid: '手机号格式不正确'
+    },
+    pwd: {
+      required: '请输入密码',
+      invalid: '密码格式不正确'
+    },
+    confirmPwd: {
+      required: '请再次输入密码',
+      invalid: '两次输入的密码不一致'
+    },
+    code: {
+      required: '请输入验证码',
+      invalid: '验证码格式不正确'
+    },
+    email: {
+      required: '请输入邮箱',
+      invalid: '邮箱格式不正确'
+    }
   }
 };
 export default local;

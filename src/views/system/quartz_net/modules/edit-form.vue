@@ -31,7 +31,8 @@ const {
   send: handleSubmit,
   form: formData,
   reset: resetFrom,
-  updateForm
+  updateForm,
+  loading: subLoading
 } = useForm(
   form =>
     (form.id ? Apis.QuartzNet.Update : Apis.QuartzNet.Add)({
@@ -89,11 +90,13 @@ const rules: Partial<Record<RuleKey, App.Global.FormRule | App.Global.FormRule[]
       trigger: 'blur'
     }
   ],
-  // 间隔秒数仅间隔触发模式下必填
+  // 间隔秒数仅间隔触发模式下必填；后端新增要求大于5秒、编辑要求不小于1秒，前端按新增/编辑分别前置校验
   intervalSecond: [
     {
       validator: (_rule, value, callback) => {
-        if (formData.value.triggerType === 2 && !value) callback(new Error('请输入间隔秒数'));
+        if (formData.value.triggerType !== 2) callback();
+        else if (!value) callback(new Error('请输入间隔秒数'));
+        else if (!formData.value.id && value <= 5) callback(new Error('新增任务时间隔秒数需大于5'));
         else callback();
       },
       trigger: 'blur'
@@ -101,7 +104,7 @@ const rules: Partial<Record<RuleKey, App.Global.FormRule | App.Global.FormRule[]
   ]
 };
 /** 获取详情 */
-const { send: getInfo } = useRequest(
+const { send: getInfo, loading: infoLoading } = useRequest(
   id =>
     Apis.QuartzNet.GetInfo({
       params: { id },
@@ -131,6 +134,7 @@ const closeForm = () => {
 defineExpose({
   openForm
 });
+const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
@@ -153,7 +157,12 @@ defineExpose({
         </ElFormItem>
 
         <ElFormItem v-if="formData.triggerType === 1" label="Cron表达式" prop="cron">
-          <ElInput v-model="formData.cron" placeholder="0/5 * * * * ?" />
+          <ElInput v-model="formData.cron" placeholder="0/5 * * * * ?">
+            <!-- 在线生成器:cron.ren 支持可视化解析/反解析 Quartz 表达式 -->
+            <template #append>
+              <ElButton tag="a" href="https://cron.ren/" target="_blank" rel="noopener noreferrer">在线生成</ElButton>
+            </template>
+          </ElInput>
         </ElFormItem>
 
         <ElFormItem v-if="formData.triggerType === 2" label="间隔秒数" prop="intervalSecond">
@@ -226,7 +235,7 @@ defineExpose({
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.close') }}</ElButton>
-        <ElButton type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</ElButton>
+        <ElButton type="primary" :loading="loading" @click="handleSubmit">{{ $t('common.confirm') }}</ElButton>
       </ElSpace>
     </template>
   </ElDialog>

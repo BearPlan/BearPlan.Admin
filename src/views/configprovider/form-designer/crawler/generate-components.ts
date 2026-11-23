@@ -423,7 +423,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'suffixIcon', description: '后置图标', type: ['string'], default: 'ArrowUp' },
         { name: 'tagType', description: '标签类型', type: ['string'], default: 'info' },
         { name: 'validateEvent', description: '是否触发表单验证', type: ['boolean'], default: true }
-      ],
+      ]),
       slots: [
         { name: 'default', description: '选项内容（ElOption）' },
         { name: 'prefix', description: '前缀内容' },
@@ -500,7 +500,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'beforeChange', description: '切换前的钩子', type: ['function'], default: undefined },
         { name: 'id', description: '原生 id 属性', type: ['string'], default: '' },
         { name: 'loadingIcon', description: '加载中图标', type: ['string'], default: 'Loading' }
-      ],
+      ]),
       slots: [
         { name: 'activeIcon', description: '打开时图标内容' },
         { name: 'inactiveIcon', description: '关闭时图标内容' },
@@ -549,7 +549,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'tooltipClass', description: '提示框类名', type: ['string'], default: '' },
         { name: 'marks', description: '标记', type: ['object'], default: undefined },
         { name: 'strictly', description: '是否只能选择 step 的倍数', type: ['boolean'], default: false }
-      ],
+      ]),
       slots: [],
       events: [
         { name: 'change', description: '值改变时触发', params: '(value: number)' },
@@ -601,7 +601,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'disabledMinutes', description: '禁止的分钟', type: ['function'], default: undefined },
         { name: 'disabledSeconds', description: '禁止的秒', type: ['function'], default: undefined },
         { name: 'teleported', description: '是否传送至 body', type: ['boolean'], default: false }
-      ],
+      ]),
       slots: [],
       events: [
         { name: 'change', description: '值改变时触发', params: '(value: Date)' },
@@ -664,7 +664,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'shortcuts', description: '快捷选项', type: ['array'], default: undefined },
         { name: 'disabledDate', description: '禁止日期', type: ['function'], default: undefined },
         { name: 'teleported', description: '是否传送至 body', type: ['boolean'], default: false }
-      ],
+      ]),
       slots: [],
       events: [
         { name: 'change', description: '值改变时触发', params: '(value: Date | Date[])' },
@@ -721,7 +721,7 @@ const componentMetaList: ComponentMeta[] = [
           options: ['large', 'default', 'small']
         },
         { name: 'clearable', description: '是否可清空', type: ['boolean'], default: false }
-      ],
+      ]),
       slots: [],
       events: [{ name: 'change', description: '分值改变时触发', params: '(value: number)' }],
       methods: []
@@ -758,7 +758,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'name', description: '原生 name 属性', type: ['string'], default: '' },
         { name: 'validateEvent', description: '是否触发表单验证', type: ['boolean'], default: true },
         { name: 'teleported', description: '是否传送至 body', type: ['boolean'], default: false }
-      ],
+      ]),
       slots: [],
       events: [
         { name: 'change', description: '颜色改变时触发', params: '(value: string)' },
@@ -817,7 +817,7 @@ const componentMetaList: ComponentMeta[] = [
         },
         { name: 'crossorigin', description: 'CORS 设置', type: ['string'], default: '' },
         { name: 'teleported', description: '是否传送至 body', type: ['boolean'], default: false }
-      ],
+      ]),
       slots: [
         { name: 'default', description: '默认内容（触发按钮）' },
         { name: 'trigger', description: '触发内容' },
@@ -858,7 +858,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'textColor', description: '文本颜色', type: ['string'], default: '' },
         { name: 'fill', description: '填充颜色', type: ['string'], default: '' },
         { name: 'validateEvent', description: '是否触发表单验证', type: ['boolean'], default: true }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容（ElRadio）' }],
       events: [{ name: 'change', description: '值改变时触发', params: '(value: any)' }],
       methods: []
@@ -889,7 +889,7 @@ const componentMetaList: ComponentMeta[] = [
           default: 'default',
           options: ['large', 'default', 'small']
         }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容' }],
       events: [],
       methods: []
@@ -924,7 +924,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'textColor', description: '文本颜色', type: ['string'], default: '' },
         { name: 'fill', description: '填充颜色', type: ['string'], default: '' },
         { name: 'validateEvent', description: '是否触发表单验证', type: ['boolean'], default: true }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容（ElCheckbox）' }],
       events: [{ name: 'change', description: '值改变时触发', params: '(value: any[])' }],
       methods: []
@@ -960,7 +960,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'checked', description: '是否选中', type: ['boolean'], default: false },
         { name: 'indeterminate', description: '是否半选', type: ['boolean'], default: false },
         { name: 'validateEvent', description: '是否触发表单验证', type: ['boolean'], default: true }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容' }],
       events: [{ name: 'change', description: '值改变时触发', params: '(value: boolean | string | number)' }],
       methods: []
@@ -1014,7 +1014,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'dark', description: '是否深色模式', type: ['boolean'], default: false },
         { name: 'link', description: '是否链接按钮', type: ['boolean'], default: false },
         { name: 'bg', description: '背景色', type: ['boolean'], default: false }
-      ],
+      ]),
       slots: [
         { name: 'default', description: '默认内容' },
         { name: 'icon', description: '图标内容' },
@@ -1059,7 +1059,7 @@ const componentMetaList: ComponentMeta[] = [
         },
         { name: 'stretch', description: '是否拉伸', type: ['boolean'], default: false },
         { name: 'beforeLeave', description: '离开前的钩子', type: ['function'], default: undefined }
-      ],
+      ]),
       slots: [
         { name: 'default', description: '默认插槽（ElTabPane）' },
         { name: 'leftExtra', description: '左侧额外内容' },
@@ -1113,7 +1113,7 @@ const componentMetaList: ComponentMeta[] = [
       attributes: smartAttrs([
         { name: 'modelValue', description: '绑定值', type: ['array'], default: () => [] },
         { name: 'accordion', description: '是否手风琴模式', type: ['boolean'], default: false }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容（ElCollapseItem）' }],
       events: [{ name: 'change', description: '值改变时触发', params: '(activeNames: array)' }],
       methods: []
@@ -1168,7 +1168,7 @@ const componentMetaList: ComponentMeta[] = [
         },
         { name: 'bodyStyle', description: '主体样式', type: ['object'], default: undefined },
         { name: 'bodyClass', description: '主体类名', type: ['string'], default: '' }
-      ],
+      ]),
       slots: [
         { name: 'default', description: '默认内容' },
         { name: 'header', description: '标题内容' }
@@ -1210,7 +1210,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'tag', description: '自定义标签', type: ['string'], default: 'span' },
         { name: 'class', description: '类名', type: ['string'], default: '' },
         { name: 'style', description: '样式', type: ['object'], default: undefined }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容' }],
       events: [],
       methods: []
@@ -1250,7 +1250,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'disableTransitions', description: '是否禁用渐变动画', type: ['boolean'], default: false },
         { name: 'hit', description: '是否有边框', type: ['boolean'], default: false },
         { name: 'color', description: '背景色', type: ['string'], default: '' }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容' }],
       events: [{ name: 'close', description: '关闭时触发' }],
       methods: []
@@ -1282,7 +1282,7 @@ const componentMetaList: ComponentMeta[] = [
           options: ['left', 'center', 'right']
         },
         { name: 'borderStyle', description: '边框样式', type: ['string'], default: 'solid' }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容' }],
       events: [],
       methods: []
@@ -1325,7 +1325,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'striped', description: '是否条纹', type: ['boolean'], default: false },
         { name: 'stripedFlow', description: '是否流动条纹', type: ['boolean'], default: false },
         { name: 'duration', description: '持续时间', type: ['number'], default: undefined }
-      ],
+      ]),
       slots: [],
       events: [],
       methods: []
@@ -1359,7 +1359,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'closeText', description: '关闭文本', type: ['string'], default: '' },
         { name: 'showIcon', description: '是否显示图标', type: ['boolean'], default: false },
         { name: 'effect', description: '主题', type: ['string'], default: 'light', options: ['light', 'dark'] }
-      ],
+      ]),
       slots: [
         { name: 'default', description: '默认内容' },
         { name: 'title', description: '标题内容' }
@@ -1400,7 +1400,7 @@ const componentMetaList: ComponentMeta[] = [
         },
         { name: 'title', description: '标题', type: ['string'], default: '' },
         { name: 'extra', description: '额外内容', type: ['string'], default: '' }
-      ],
+      ]),
       slots: [
         { name: 'default', description: '默认内容（ElDescriptionsItem）' },
         { name: 'title', description: '标题内容' },
@@ -1435,7 +1435,7 @@ const componentMetaList: ComponentMeta[] = [
         },
         { name: 'className', description: '类名', type: ['string'], default: '' },
         { name: 'labelClassName', description: '标签类名', type: ['string'], default: '' }
-      ],
+      ]),
       slots: [
         { name: 'default', description: '默认内容' },
         { name: 'label', description: '标签内容' }
@@ -1476,7 +1476,7 @@ const componentMetaList: ComponentMeta[] = [
           options: ['top', 'middle', 'bottom']
         },
         { name: 'tag', description: '自定义标签', type: ['string'], default: 'div' }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容（ElCol）' }],
       events: [],
       methods: []
@@ -1529,7 +1529,7 @@ const componentMetaList: ComponentMeta[] = [
         { name: 'wrap', description: '是否换行', type: ['boolean'], default: false },
         { name: 'fill', description: '是否填充', type: ['boolean'], default: false },
         { name: 'fillRatio', description: '填充比例', type: ['number'], default: undefined }
-      ],
+      ]),
       slots: [{ name: 'default', description: '默认内容' }],
       events: [],
       methods: []

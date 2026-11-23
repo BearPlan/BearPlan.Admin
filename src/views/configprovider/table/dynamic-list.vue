@@ -21,7 +21,7 @@ interface Props {
   addUrl?: string;
   delUrl: string;
   params?: Arg;
-  endColumns?: UI.TableColumnCheck[] | (Partial<TableColumnCtx<any>> & { checked?: boolean })[];
+  endColumns?: TableColumn[] | (Partial<TableColumnCtx<any>> & { checked?: boolean })[];
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { tableof, router, configId, pageUrl, addUrl, delUrl, params, endColumns } = defineProps<Props>();
@@ -33,7 +33,7 @@ interface Emits {
 const tableRef = useTemplateRef('tableRef');
 const emit = defineEmits<Emits>();
 const tableView = ref<TableView>();
-const columns = ref<Array<UI.TableColumnCheck>>([]);
+const columns = ref<Array<TableColumn>>([]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}
 });
@@ -43,7 +43,7 @@ const loadChange = (table: TableView) => {
     table?.columns
       ?.filter(item => item.isShow)
       .map(item => {
-        return { ...item, checked: true, attrs: item.attrs } as unknown as UI.TableColumnCheck;
+        return { ...item, checked: true, attrs: item.attrs } as unknown as TableColumn;
       }) || [];
 
   if (dataTableConfig.value) dataTableConfig.value.sortList = table?.sorts || {};
@@ -51,9 +51,7 @@ const loadChange = (table: TableView) => {
   emit('loadChange', table);
 };
 
-const columnData = computed<
-  Array<Partial<TableColumnCtx<TableColumn>> & TableColumn & { checked?: boolean; isExcel?: boolean }>
->(() => {
+const columnData = computed<Array<Partial<TableColumnCtx<TableColumn>> & TableColumn>>(() => {
   const arr = columns.value
     ?.filter(item => item.checked)
     .map(item => {

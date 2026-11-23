@@ -5,7 +5,7 @@ import { $t } from '@/locales';
 
 defineOptions({ name: 'TableColumnSetting' });
 
-const columns = defineModel<TableColumn[] | null | undefined>('columns', {
+const columns = defineModel<Array<Partial<TableColumn>>>('columns', {
   required: true
 });
 </script>

@@ -292,6 +292,54 @@ declare namespace App {
     };
 
     type Schema = {
+      enum: {
+        asc: string;
+        desc: string;
+      };
+      table: {
+        table: string;
+        sorts: string;
+        selection: string;
+        dragsort: string;
+        prop: string;
+        label: string;
+        show: string;
+        hide: string;
+        excel: string;
+        columnType: string;
+        searchType: string;
+        use: string;
+        setting: string;
+        isMultiple: string;
+      };
+      menu: {
+        parent: string;
+        menuType: string;
+        menuName: string;
+        routeName: string;
+        routePath: string;
+        order: string;
+        hideInMenu: string;
+        activeMenu: string;
+        menuStatus: string;
+        addChildren: string;
+        pathParam: string;
+        layout: string;
+        page: string;
+        icon: string;
+        iconType: string;
+        constant: string;
+        keepAlive: string;
+        href: string;
+        multiTab: string;
+        fixedIndexInTab: string;
+        query: string;
+        button: string;
+        buttonCode: string;
+        buttonDesc: string;
+      };
+      /** 表头搜索条件枚举文案，消费端按 ConditionalType 动态拼接 key */
+      sqlSugar: Record<string, string>;
       system: {
         title: string;
         updateTitle: string;
@@ -300,6 +348,11 @@ declare namespace App {
         updateCancel: string;
       };
       common: {
+        i18n: string;
+        placeholder: string;
+        placeholderSelect: string;
+        cleanAndClose: string;
+        preview: string;
         action: string;
         add: string;
         addSuccess: string;
@@ -341,14 +394,6 @@ declare namespace App {
           yes: string;
           no: string;
         };
-      };
-      request: {
-        logout: string;
-        logoutMsg: string;
-        logoutWithModal: string;
-        logoutWithModalMsg: string;
-        refreshToken: string;
-        tokenExpired: string;
       };
       theme: {
         themeSchema: { title: string } & Record<UnionKey.ThemeScheme, string>;
@@ -449,6 +494,7 @@ declare namespace App {
             superAdmin: string;
             admin: string;
             user: string;
+            wechatLogin: string;
           };
           codeLogin: {
             title: string;
@@ -468,20 +514,15 @@ declare namespace App {
           };
           bindWeChat: {
             title: string;
+            qrCodeTip: string;
+            clickToRefresh: string;
+            backToPwdLogin: string;
+            status_Waiting: string;
+            status_Scanned: string;
+            status_Confirmed: string;
+            status_Unbound: string;
+            status_Expired: string;
           };
-        };
-        about: {
-          title: string;
-          introduction: string;
-          projectInfo: {
-            title: string;
-            version: string;
-            latestBuildTime: string;
-            githubLink: string;
-            previewLink: string;
-          };
-          prdDep: string;
-          devDep: string;
         };
         home: {
           branchDesc: string;
@@ -510,177 +551,6 @@ declare namespace App {
             desc5: string;
           };
           creativity: string;
-        };
-        function: {
-          tab: {
-            tabOperate: {
-              title: string;
-              addTab: string;
-              addTabDesc: string;
-              closeTab: string;
-              closeCurrentTab: string;
-              closeAboutTab: string;
-              addMultiTab: string;
-              addMultiTabDesc1: string;
-              addMultiTabDesc2: string;
-            };
-            tabTitle: {
-              title: string;
-              changeTitle: string;
-              change: string;
-              resetTitle: string;
-              reset: string;
-            };
-          };
-          multiTab: {
-            routeParam: string;
-            backTab: string;
-          };
-          toggleAuth: {
-            toggleAccount: string;
-            authHook: string;
-            superAdminVisible: string;
-            adminVisible: string;
-            adminOrUserVisible: string;
-          };
-          request: {
-            repeatedErrorOccurOnce: string;
-            repeatedError: string;
-            repeatedErrorMsg1: string;
-            repeatedErrorMsg2: string;
-          };
-        };
-        alova: {
-          scenes: {
-            captchaSend: string;
-            autoRequest: string;
-            visibilityRequestTips: string;
-            pollingRequestTips: string;
-            networkRequestTips: string;
-            refreshTime: string;
-            startRequest: string;
-            stopRequest: string;
-            requestCrossComponent: string;
-            triggerAllRequest: string;
-          };
-        };
-        manage: {
-          common: {
-            status: {
-              enable: string;
-              disable: string;
-            };
-          };
-          role: {
-            title: string;
-            roleName: string;
-            roleCode: string;
-            roleStatus: string;
-            roleDesc: string;
-            form: {
-              roleName: string;
-              roleCode: string;
-              roleStatus: string;
-              roleDesc: string;
-            };
-            addRole: string;
-            editRole: string;
-            menuAuth: string;
-            buttonAuth: string;
-          };
-          user: {
-            title: string;
-            userName: string;
-            userGender: string;
-            nickName: string;
-            userPhone: string;
-            userEmail: string;
-            userStatus: string;
-            userRole: string;
-            form: {
-              userName: string;
-              userGender: string;
-              nickName: string;
-              userPhone: string;
-              userEmail: string;
-              userStatus: string;
-              userRole: string;
-            };
-            addUser: string;
-            editUser: string;
-            gender: {
-              male: string;
-              female: string;
-            };
-          };
-          menu: {
-            home: string;
-            title: string;
-            id: string;
-            parentId: string;
-            menuType: string;
-            menuName: string;
-            routeName: string;
-            routePath: string;
-            pathParam: string;
-            layout: string;
-            page: string;
-            i18nKey: string;
-            icon: string;
-            localIcon: string;
-            iconTypeTitle: string;
-            order: string;
-            constant: string;
-            keepAlive: string;
-            href: string;
-            hideInMenu: string;
-            activeMenu: string;
-            multiTab: string;
-            fixedIndexInTab: string;
-            query: string;
-            button: string;
-            buttonCode: string;
-            buttonDesc: string;
-            menuStatus: string;
-            form: {
-              home: string;
-              menuType: string;
-              menuName: string;
-              routeName: string;
-              routePath: string;
-              pathParam: string;
-              layout: string;
-              page: string;
-              i18nKey: string;
-              icon: string;
-              localIcon: string;
-              order: string;
-              keepAlive: string;
-              href: string;
-              hideInMenu: string;
-              activeMenu: string;
-              multiTab: string;
-              fixedInTab: string;
-              fixedIndexInTab: string;
-              queryKey: string;
-              queryValue: string;
-              button: string;
-              buttonCode: string;
-              buttonDesc: string;
-              menuStatus: string;
-            };
-            addMenu: string;
-            editMenu: string;
-            addChildMenu: string;
-            type: {
-              directory: string;
-              menu: string;
-            };
-            iconType: {
-              iconify: string;
-              local: string;
-            };
-          };
         };
       };
       form: {

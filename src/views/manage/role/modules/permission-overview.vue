@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import type { RolePermissionParam } from '@/api/globals';
 import { VersionEnum } from '@/api/apiEnums';
 import { VersionDisplay } from '@/api/apiEnumsDisplay';
@@ -63,8 +63,8 @@ const permissionDensity = computed(() => {
       <div class="flex items-center gap-3">
         <i class="i-carbon-user-role text-2xl text-blue-500" />
         <div>
-          <h3 class="text-lg text-gray-800 font-semibold">{{ roleName || '未知角色' }}</h3>
-          <p class="text-sm text-gray-500">权限配置概览</p>
+          <h3 class="text-lg text-[var(--el-text-color-primary)] font-semibold">{{ roleName || '未知角色' }}</h3>
+          <p class="text-sm text-[var(--el-text-color-secondary)]">权限配置概览</p>
         </div>
       </div>
     </div>
@@ -162,7 +162,7 @@ const permissionDensity = computed(() => {
 <style scoped>
 .permission-overview {
   padding: 20px;
-  background: white;
+  background: var(--el-bg-color);
   border-radius: 8px;
   border: 1px solid var(--el-border-color-lighter);
 }
@@ -216,7 +216,7 @@ const permissionDensity = computed(() => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: white;
+  background: var(--el-bg-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -263,10 +263,6 @@ const permissionDensity = computed(() => {
 .empty-state {
   text-align: center;
   padding: 40px 0;
-}
-
-.permission-bars {
-  space-y: 12px;
 }
 
 .permission-bar {
@@ -358,7 +354,7 @@ const permissionDensity = computed(() => {
   font-weight: 600;
   color: var(--el-text-color-regular);
   padding: 2px 8px;
-  background: white;
+  background: var(--el-bg-color);
   border-radius: 12px;
   min-width: 24px;
   text-align: center;

@@ -3,8 +3,8 @@ import { $t } from '@/locales';
 
 defineOptions({ name: 'LoginBanner' });
 
-// 链接常量：项目地址取自官网 index.md brand action；文档指向官网站点
-const PROJECT_URL = 'https://gitee.com/ByteXiong/BearPlan';
+// 链接常量：项目地址指向 Gitee 组织主页（后端、Core、Admin 各仓库统一入口）；文档指向官网站点
+const PROJECT_URL = 'https://gitee.com/BearPlan';
 const DOCS_URL = 'https://bear.js.org/';
 
 function openLink(url: string) {

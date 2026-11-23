@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { WatermarkProps } from 'element-plus';
+import type { DialogConfigContext, WatermarkProps } from 'element-plus';
 import { useAppStore } from './store/modules/app';
 import { useThemeStore } from './store/modules/theme';
 import { useAuthStore } from './store/modules/auth';
@@ -15,6 +15,11 @@ const authStore = useAuthStore();
 const locale = computed(() => {
   return UILocales[appStore.locale];
 });
+// el-dialog 全局默认：可拖拽且可拖出视口边界；实例上显式传参可覆盖
+const dialogConfig: DialogConfigContext = {
+  draggable: true,
+  overflow: true
+};
 // 页面挂载
 // customRender()
 const watermarkProps = computed<WatermarkProps>(() => {
@@ -36,7 +41,7 @@ const watermarkProps = computed<WatermarkProps>(() => {
 </script>
 
 <template>
-  <ElConfigProvider :locale="locale">
+  <ElConfigProvider :locale="locale" :dialog="dialogConfig">
     <AppProvider>
       <ElWatermark class="h-full" v-bind="watermarkProps">
         <RouterView class="bg-layout" />

@@ -195,8 +195,9 @@ const routeMap: RouteMap = {
   "manage_dept": "/manage/dept",
   "manage_job": "/manage/job",
   "manage_menu": "/manage/menu",
+  "manage_online": "/manage/online",
+  "manage_online_user": "/manage/online/user",
   "manage_role": "/manage/role",
-  "manage_tenant": "/manage/tenant",
   "manage_user": "/manage/user",
   "manage_user-detail": "/manage/user-detail/:id",
   "message": "/message",
@@ -210,14 +211,23 @@ const routeMap: RouteMap = {
   "monitor_audit_log": "/monitor/audit/log",
   "monitor_exceptio": "/monitor/exceptio",
   "monitor_exceptio_log": "/monitor/exceptio/log",
-  "monitor_online": "/monitor/online",
-  "monitor_online_user": "/monitor/online/user",
   "monitor_server": "/monitor/server",
+  "monitor_sms": "/monitor/sms",
+  "monitor_task": "/monitor/task",
+  "monitor_task_log": "/monitor/task/log",
   "system": "/system",
   "system_apis": "/system/apis",
+  "system_app": "/system/app",
+  "system_app_secret": "/system/app/secret",
   "system_dict": "/system/dict",
+  "system_file": "/system/file",
+  "system_file_record": "/system/file/record",
   "system_quartz": "/system/quartz",
-  "system_quartz_net": "/system/quartz/net"
+  "system_quartz_net": "/system/quartz/net",
+  "system_setting": "/system/setting",
+  "system_tenant": "/system/tenant",
+  "system_token": "/system/token",
+  "system_token_blacklist": "/system/token/blacklist"
 };
 
 /**

@@ -33,7 +33,8 @@ const {
   send: handleSubmit,
   form: formData,
   reset: resetFrom,
-  updateForm
+  updateForm,
+  loading: subLoading
 } = useForm(
   form =>
     (form.id ? Apis.EmailAccount.Update : Apis.EmailAccount.Add)({
@@ -68,7 +69,7 @@ const {
 );
 
 /** 获取详情 */
-const { send: getInfo } = useRequest(
+const { send: getInfo, loading: infoLoading } = useRequest(
   id =>
     Apis.EmailAccount.GetInfo({
       params: { id },
@@ -95,6 +96,7 @@ const closeForm = () => {
 };
 
 defineExpose({ openForm });
+const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
@@ -159,7 +161,7 @@ defineExpose({ openForm });
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.cancel') }}</ElButton>
-        <ElButton type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</ElButton>
+        <ElButton type="primary" :loading="loading" @click="handleSubmit">{{ $t('common.confirm') }}</ElButton>
       </ElSpace>
     </template>
   </ElDialog>

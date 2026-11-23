@@ -15,6 +15,32 @@ import { alovaGlobals, swagger } from 'wormajs/plugin';
 declare const __dirname: string;
 const configDir = __dirname;
 
+/** swagger 文档默认地址（线上），.env.test 未配置 VITE_WORMA_SWAGGER_URL 时回退使用 */
+const DEFAULT_SWAGGER_URL = 'https://bearplan.net/swagger/v1/swagger.json';
+
+/**
+ * 从 .env.test 读取 swagger 文档地址（VITE_WORMA_SWAGGER_URL）。
+ *
+ * 本配置会被 worma 用 esbuild 打包成 cjs 临时文件执行，拿不到 Vite 的 loadEnv /
+ * import.meta.env，故用 fs 按 KEY=VALUE 行格式手动解析。兼容「= 后带空格」与
+ * 可选的引号包裹（' " `）。
+ * 文件缺失或字段未配置时返回 null，由调用方回退到 DEFAULT_SWAGGER_URL。
+ */
+function readEnvSwaggerUrl(): string | null {
+  try {
+    const content = fs.readFileSync(path.resolve(configDir, '.env.test'), 'utf8');
+    for (const line of content.split(/\r?\n/)) {
+      const m = /^VITE_WORMA_SWAGGER_URL\s*=\s*(.+)$/.exec(line.trim());
+      if (m) {
+        return m[1].trim().replace(/^['"`]+|['"`]+$/g, '') || null;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * 轻量排版：规整后端返回源码 / 本地渲染产物的换行，让生成文件干净易读。
  *
@@ -541,10 +567,12 @@ export default defineConfig({
       },
       plugins: [
         // swagger 平台插件：传入完整 swagger.json 地址，自动写入 config.input（候选 URL 数组）。
+        // 地址优先取 .env.test 的 VITE_WORMA_SWAGGER_URL（日常 dev 即 --mode test，
+        // 与 VITE_SERVICE_BASE_URL 的本地测试后端对齐），未配置时回退线上默认地址。
         // 注意：本项目 swagger 在非标准路径 /swagger/v4/，swagger() 的标准候选（/openapi.json、
         // /v2/swagger.json 等）会 404，靠最后一个「base 原样」候选命中——接受这点 fallback 开销。
         // 必须排在 dynamicEnums 之前，确保 dynamicEnums 的 config 钩子能读到 swagger 写入的 input。
-        swagger('https://bearplan.net/swagger/v1/swagger.json'),
+        swagger(readEnvSwaggerUrl() ?? DEFAULT_SWAGGER_URL),
         // 动态枚举插件：config 钩子读 cfg.input（由 swagger 插件写入）拉取后端枚举
         dynamicEnums,
         // aiDoc 插件：生成 AI 可读接口文档（aidocs 目录），不自动安装 skill

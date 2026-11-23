@@ -113,7 +113,7 @@ function onDragEnd(evt: any) {
   // 暂时只做视觉反馈，不调用后端API
 }
 
-const columns = ref<UI.TableColumnCheck[] | (Partial<TableColumnCtx<MenuTreeDTO>> & { checked?: boolean })[]>([
+const columns = ref<TableColumn[] | (Partial<TableColumnCtx<MenuTreeDTO>> & { checked?: boolean })[]>([
   { type: 'selection', width: 48, checked: true, label: $t('table.selection') },
   { prop: 'title', label: $t('menu.menuName'), checked: true, minWidth: 120, align: 'left' },
   {

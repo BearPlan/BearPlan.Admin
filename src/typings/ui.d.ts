@@ -7,8 +7,6 @@ declare namespace UI {
 
   type TableColumnWithKey<T> = SetTableColumnKey<DataTableBaseColumn<T>, T>;
 
-  type TableColumn<T> = DataTableBaseColumn<T>;
-
   /**
    * the type of table operation
    *
