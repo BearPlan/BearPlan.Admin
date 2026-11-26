@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import type { TableColumnCtx } from 'element-plus';
-import type { TableColumn } from '@/typings/table';
 import { ConditionalType } from '@/api/sqlSugar';
+import type { TableColumn } from '@/typings/table';
 defineOptions({ name: 'CustomHeader', inheritAttrs: false });
 type Props = {
   column: Partial<TableColumnCtx<any> & TableColumn>;
@@ -50,7 +50,7 @@ const confirm = () => {
       <ElInput
         :ref="`${column?.prop}Ref`"
         v-model="searchValue"
-        :placeholder="$t('common.placeholder') + $t(column.label as string)"
+        :placeholder="$t('common.placeholder') + column.label"
         v-bind="$attrs"
       ></ElInput>
       <!-- confirm 确定框-->
@@ -62,11 +62,11 @@ const confirm = () => {
       <template #reference>
         <div>
           <IconIcRoundSearch />
-          <span :class="searchValue ? 'text-primary' : ''">{{ $t(column.label as string) }}</span>
+          <span :class="searchValue ? 'text-primary' : ''">{{ column.label }}</span>
         </div>
       </template>
     </ElPopover>
-    <span v-else>{{ $t(column.label as string) }}</span>
+    <span v-else>{{ column.label }}</span>
   </div>
 </template>
 

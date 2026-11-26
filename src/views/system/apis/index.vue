@@ -5,12 +5,12 @@ import type { Sort, TableColumnCtx } from 'element-plus';
 import { ElButton, ElCard, ElPagination, ElSpace, ElTabPane, ElTable, ElTableColumn, ElTabs } from 'element-plus';
 import Apis from '@/api';
 import type { ApisDTO } from '@/api/globals';
-import type { TableColumn } from '@/typings/table';
 import type { OrderTypeEnum } from '@/api/apiEnums';
 import { VersionEnum } from '@/api/apiEnums';
 import { ConditionalType } from '@/api/sqlSugar';
 import { getEnumValue } from '@/utils/common';
 import downloadExcel from '@/utils/downloadExcel';
+import type { TableColumn } from '@/typings/table';
 import { $t } from '@/locales';
 import CustomHeader from '@/components/advanced/custom-header.vue';
 import { usePagination, useRequest } from '~/packages/alova/src/client';
@@ -25,22 +25,18 @@ type DataType = ApisDTO;
 // 当前版本 Tab（API 路由按前端版本分组扫描）
 const activeName = ref(VersionEnum.Pc);
 
-// 默认列表字段（文本列 + 表头搜索），进入列设置面板供勾选/排序；其余字段缺省时消费方按 falsy 兜底
-const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
+// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
+const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
   { prop: 'group', label: '分组', searchType: ConditionalType.Like, checked: true },
   { prop: 'url', label: '路径', searchType: ConditionalType.Like, checked: true },
   { prop: 'method', label: '请求方式', searchType: ConditionalType.Equal, checked: true },
   { prop: 'description', label: '描述', searchType: ConditionalType.Like, checked: true }
-];
-
-// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
-const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
+]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}
 });
 // 表头搜索条件
 const searchParams = ref<Record<string, Record<string, string>>>({});
-
 
 // 渲染列：按列设置勾选过滤（全不勾选即空表）
 const tableColumns = computed<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(() => {
@@ -82,8 +78,8 @@ const {
     }),
   {
     watchingStates: [dataTableConfig, searchParams],
-    force: false,
-    immediate: false,
+    force: true,
+    immediate: true,
     initialPage: 1, // 初始页码，默认为1
     initialPageSize: 15, // 初始每页数据条数
     preloadPreviousPage: false, // 是否预加载上一页

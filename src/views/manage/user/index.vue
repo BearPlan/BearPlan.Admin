@@ -59,16 +59,13 @@ const route = useRoute();
 const tableRef = ref();
 type DataType = UserDTO;
 
-// 默认列表字段（文本列 + 表头模糊搜索），进入列设置面板供勾选/排序；其余字段缺省时消费方按 falsy 兜底
-const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
+// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
+const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
   { prop: 'userName', label: '用户名', searchType: ConditionalType.Like, checked: true },
   { prop: 'nickName', label: '昵称', searchType: ConditionalType.Like, checked: true },
   { prop: 'phone', label: '手机号', searchType: ConditionalType.Like, checked: true },
   { prop: 'email', label: '邮箱', searchType: ConditionalType.Like, checked: true }
-];
-
-// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
-const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
+]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}
 });

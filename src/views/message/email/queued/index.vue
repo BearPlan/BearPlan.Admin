@@ -20,8 +20,8 @@ const route = useRoute();
 const tableRef = ref();
 type DataType = QueuedEmailDTO;
 
-// 默认列表字段（文本列 + 表头搜索），进入列设置面板供勾选/排序；后端无列配置时兜底展示
-const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
+// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
+const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
   { prop: 'from', label: '发件邮箱', searchType: ConditionalType.Like, checked: true },
   { prop: 'fromName', label: '发件人名称', searchType: ConditionalType.Like, checked: true },
   { prop: 'to', label: '收件邮箱', searchType: ConditionalType.Like, checked: true },
@@ -51,10 +51,7 @@ const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
   },
   { prop: 'sendTime', label: '发送时间', checked: true }
   // replyTo/replyToName/cc/bcc/body/emailAccountId 为次要或长文本字段，不进默认列；如需展示可在后端列配置中开启
-];
-
-// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
-const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
+]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}
 });
@@ -101,8 +98,8 @@ const {
     }),
   {
     watchingStates: [dataTableConfig, searchParams],
-    force: false,
-    immediate: false,
+    force: true,
+    immediate: true,
     initialPage: 1, // 初始页码，默认为1
     initialPageSize: 15, // 初始每页数据条数
     preloadPreviousPage: false, // 是否预加载上一页

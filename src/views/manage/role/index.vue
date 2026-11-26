@@ -31,8 +31,8 @@ const dataScopeMap: Record<DataScopeType, string> = {
   5: '自定义'
 };
 
-// 默认列表字段（文本列 + 表头搜索），进入列设置面板供勾选/排序；其余字段缺省时消费方按 falsy 兜底
-const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
+// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
+const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
   { prop: 'name', label: '角色名称', searchType: ConditionalType.Like, checked: true },
   { prop: 'level', label: '级别', searchType: ConditionalType.Equal, checked: true },
   {
@@ -43,10 +43,7 @@ const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
     formatter: row => dataScopeMap[row.dataScopeType]
   },
   { prop: 'description', label: '描述', searchType: ConditionalType.Like, checked: true }
-];
-
-// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
-const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
+]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}
 });
@@ -93,8 +90,8 @@ const {
     }),
   {
     watchingStates: [dataTableConfig, searchParams],
-    force: false,
-    immediate: false,
+    force: true,
+    immediate: true,
     initialPage: 1, // 初始页码，默认为1
     initialPageSize: 15, // 初始每页数据条数
     preloadPreviousPage: false, // 是否预加载上一页

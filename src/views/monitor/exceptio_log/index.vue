@@ -20,8 +20,8 @@ const route = useRoute();
 const tableRef = ref();
 type DataType = ExceptionLogDTO;
 
-// 默认列表字段（文本列 + 表头搜索），进入列设置面板供勾选/排序；后端表格视图未配置时兜底展示
-const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
+// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
+const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
   { prop: 'controller', label: '控制器', searchType: ConditionalType.Like, checked: true },
   { prop: 'action', label: '方法', searchType: ConditionalType.Like, checked: true },
   { prop: 'exceptionMessage', label: '异常信息', searchType: ConditionalType.Like, checked: true },
@@ -29,9 +29,7 @@ const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
   { prop: 'logLevel', label: '日志级别', checked: true },
   { prop: 'requestIp', label: '请求IP', searchType: ConditionalType.Like, checked: true },
   { prop: 'createTime', label: '创建时间', checked: true }
-];
-
-const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
+]);
 const dataTableConfig = ref<UI.DataTableConfig>({ sortList: {} });
 // 表头搜索条件
 const searchParams = ref<Record<string, Record<string, string>>>({});
@@ -73,8 +71,8 @@ const {
     }),
   {
     watchingStates: [dataTableConfig, searchParams],
-    force: false,
-    immediate: false,
+    force: true,
+    immediate: true,
     initialPage: 1, // 初始页码，默认为1
     initialPageSize: 15, // 初始每页数据条数
     preloadPreviousPage: false, // 是否预加载上一页
