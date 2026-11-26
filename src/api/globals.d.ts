@@ -14,15 +14,7 @@
  *
  * **Do not edit the file manually.**
  */
-import {
-  ColumnTypeEnum,
-  IconTypeEnum,
-  LayoutTypeEnum,
-  MenuTypeEnum,
-  SexEnum,
-  VersionEnum,
-  OrderTypeEnum
-} from './apiEnums';
+import { IconTypeEnum, LayoutTypeEnum, MenuTypeEnum, SexEnum, VersionEnum, OrderTypeEnum } from './apiEnums';
 import type { Alova, AlovaMethodCreateConfig, AlovaGenerics, Method } from 'alova';
 import type { alovaInstance, $$userConfigMap } from './index';
 import type apiDefinitions from './apiDefinitions';
@@ -457,7 +449,6 @@ export interface CaptchaDTO {
 
   showCaptcha: boolean;
 }
-export type ConditionalType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17;
 export interface Cpu {
   name: string | null;
   package: string | null;
@@ -1530,117 +1521,11 @@ export interface FileRecordInfo {
    */
 
   scene: string | null;
-}
-export interface FormComponent {
   /**
-   * 字段名称
+   * 文件内容 MD5（小写 32 位；上传查重用，同一文件只存一份）
    */
 
-  label: string | null;
-  /**
-   * 字段
-   */
-
-  prop: string | null;
-  type: ColumnTypeEnum;
-  /**
-   * 是否必填
-   */
-
-  required: boolean;
-  /**
-   * 是否自定义
-   */
-
-  isCustom: boolean;
-  /**
-   * 排序
-   */
-
-  sort: number;
-  /**
-   * 是否逻辑删除
-   */
-
-  isEditDel: boolean;
-  /**
-   * 是否显示
-   */
-
-  isShow: boolean;
-  /**
-   * 插槽
-   */
-
-  slots: Record<string, string> | null;
-  /**
-   * 参数
-   */
-
-  attrs: Record<string, string> | null;
-  metadata: FormMetadata[] | null;
-  children: FormComponent[] | null;
-}
-export interface FormMetadata {
-  /**
-   * 属性
-   */
-
-  attributes: Record<string, string> | null;
-  /**
-   * 插槽
-   */
-
-  slots: Record<string, string> | null;
-  /**
-   * 事件
-   */
-
-  events: Record<string, string> | null;
-  /**
-   * 组件支持的方法
-   */
-
-  methods: Record<string, string> | null;
-}
-export interface I18nDTO {
-  /**
-   * 主键
-   */
-
-  id: string;
-  /**
-   * 键
-   */
-
-  key: string | null;
-  /**
-   * 中文
-   */
-
-  zhCn: string | null;
-  /**
-   * 英文
-   */
-
-  enUs: string | null;
-  /**
-   * 来源
-   */
-
-  source: string | null;
-  /**
-   * 访问次数
-   */
-
-  count: number;
-}
-export interface I18nDTOPagedResults {
-  pagerInfo: PagerInfo;
-  data: I18nDTO[] | null;
-}
-export interface IdCollectionString {
-  idArray: string[];
+  md5: string | null;
 }
 export interface Job {
   /**
@@ -2332,6 +2217,7 @@ export interface MenuTreeSelectDTO {
   children: MenuTreeSelectDTO[] | null;
 }
 export interface OnlineUserDTO {
+  id: string;
   /**
    * 用户ID
    */
@@ -4005,255 +3891,6 @@ export interface Sys {
   day: string | null;
   ip: string | null;
 }
-export interface TableColumn {
-  /**
-   * 字段名称
-   */
-
-  label: string | null;
-  /**
-   * 字段
-   */
-
-  prop: string | null;
-  searchType: ConditionalType;
-  /**
-   * 字段描述
-   */
-
-  columnTypeDetail: string | null;
-  /**
-   * 字段验证
-   */
-
-  columnTypeRules: string | null;
-  /**
-   * 是否自定义
-   */
-
-  isCustom: boolean;
-  /**
-   * 排序
-   */
-
-  sort: number;
-  /**
-   * 是否逻辑删除
-   */
-
-  isEditDel: boolean;
-  /**
-   * 是否显示
-   */
-
-  isShow: boolean;
-  /**
-   * 是否Excel
-   */
-
-  isExcel: boolean;
-  /**
-   * 多余参数
-   */
-
-  attrs: string | null;
-  /**
-   * 头部多余参数
-   */
-
-  headAttrsString: string | null;
-  /**
-   * 是否选中
-   */
-
-  checked: boolean;
-}
-export interface TableForm {
-  /**
-   * 主键
-   */
-
-  id: string;
-  /**
-   * 创建者ID（恒为平台用户ID，固定 long，不随主键类型）
-   */
-
-  createId: string | null;
-  /**
-   * 创建时间
-   */
-
-  createTime: string;
-  /**
-   * 更新者ID（恒为平台用户ID，固定 long，不随主键类型）
-   */
-
-  updateId: string | null;
-  /**
-   * 最后更新时间
-   */
-
-  updateTime: string | null;
-  /**
-   * 是否已删除
-   */
-
-  isDeleted: boolean;
-  /**
-   * 表名
-   */
-
-  tableof: string | null;
-  /**
-   * 路由
-   */
-
-  router: string | null;
-  /**
-   * 多余参数
-   */
-
-  attrs: string | null;
-  /**
-   * 多余参数
-   */
-
-  configId: string | null;
-  /**
-   * 组件
-   */
-
-  componentString: string | null;
-  /**
-   * 表配置
-   */
-
-  optionString: string | null;
-  /**
-   * 组件
-   */
-
-  components: FormComponent[] | null;
-}
-export interface TableView {
-  /**
-   * 主键
-   */
-
-  id: string;
-  /**
-   * 创建者ID（恒为平台用户ID，固定 long，不随主键类型）
-   */
-
-  createId: string | null;
-  /**
-   * 创建时间
-   */
-
-  createTime: string;
-  /**
-   * 更新者ID（恒为平台用户ID，固定 long，不随主键类型）
-   */
-
-  updateId: string | null;
-  /**
-   * 最后更新时间
-   */
-
-  updateTime: string | null;
-  /**
-   * 是否已删除
-   */
-
-  isDeleted: boolean;
-  /**
-   * 配置库
-   */
-
-  configId: string | null;
-  /**
-   * 路由
-   */
-
-  router: string | null;
-  /**
-   * 表名
-   */
-
-  tableof: string;
-  /**
-   * 多余参数
-   */
-
-  attrs: string | null;
-  /**
-   * 字段
-   */
-
-  columnsString: string | null;
-  /**
-   * 默认排序字段
-   */
-
-  sortString: string | null;
-  /**
-   * 字段
-   */
-
-  columns: TableColumn[] | null;
-  /**
-   * 多列排序
-   */
-
-  sorts: Record<string, OrderTypeEnum> | null;
-}
-export interface TableViewInfo {
-  /**
-   * 主键
-   */
-
-  id: string;
-  /**
-   * 配置库
-   */
-
-  configId: string | null;
-  /**
-   * 路由
-   */
-
-  router: string | null;
-  /**
-   * 表名
-   */
-
-  tableof: string;
-  /**
-   * 多余参数
-   */
-
-  attrs: string | null;
-  /**
-   * 字段
-   */
-
-  columnsString: string | null;
-  /**
-   * 默认排序字段
-   */
-
-  sortString: string | null;
-  /**
-   * 字段
-   */
-
-  columns: TableColumn[] | null;
-  /**
-   * 多列排序
-   */
-
-  sorts: Record<string, OrderTypeEnum> | null;
-}
 export interface Tenant {
   /**
    * 主键
@@ -5069,63 +4706,11 @@ export interface UpdateFileRecordParam {
    */
 
   scene: string | null;
-}
-export interface UpdateI18nParam {
   /**
-   * 主键
+   * 文件内容 MD5（小写 32 位；上传查重用，同一文件只存一份）
    */
 
-  id: string;
-  /**
-   * 创建者ID（恒为平台用户ID，固定 long，不随主键类型）
-   */
-
-  createId: string | null;
-  /**
-   * 创建时间
-   */
-
-  createTime: string;
-  /**
-   * 更新者ID（恒为平台用户ID，固定 long，不随主键类型）
-   */
-
-  updateId: string | null;
-  /**
-   * 最后更新时间
-   */
-
-  updateTime: string | null;
-  /**
-   * 是否已删除
-   */
-
-  isDeleted: boolean;
-  /**
-   * 键
-   */
-
-  key: string | null;
-  /**
-   * 中文
-   */
-
-  zhCn: string | null;
-  /**
-   * 英文
-   */
-
-  enUs: string | null;
-  /**
-   * 来源
-   */
-
-  source: string | null;
-  /**
-   * 访问次数
-   */
-
-  count: number;
+  md5: string | null;
 }
 export interface UpdateJobParam {
   /**
@@ -6110,75 +5695,6 @@ export interface UpdateSmsParam {
    */
 
   isSuccess: boolean;
-}
-export interface UpdateTableFormParam {
-  /**
-   * 主键
-   */
-
-  id: string;
-  /**
-   * 配置库
-   */
-
-  configId: string | null;
-  /**
-   * 路由
-   */
-
-  router: string | null;
-  /**
-   * 表名
-   */
-
-  tableof: string;
-  /**
-   * 多余参数
-   */
-
-  attrs: string | null;
-  /**
-   * 组件
-   */
-
-  components: FormComponent[] | null;
-}
-export interface UpdateTableViewParam {
-  /**
-   * 主键
-   */
-
-  id: string;
-  /**
-   * 配置库
-   */
-
-  configId: string | null;
-  /**
-   * 路由
-   */
-
-  router: string | null;
-  /**
-   * 表名
-   */
-
-  tableof: string;
-  /**
-   * 多余参数
-   */
-
-  attrs: string | null;
-  /**
-   * 字段
-   */
-
-  columns: TableColumn[] | null;
-  /**
-   * 默认排序字段
-   */
-
-  sorts: Record<string, OrderTypeEnum>;
 }
 export interface UpdateTenantParam {
   /**
@@ -17552,6 +17068,8 @@ declare global {
        *   size: string | null
        *   // 业务场景（上传时携带，用于追溯具体业务来源）
        *   scene: string | null
+       *   // 文件内容 MD5（小写 32 位；上传查重用，同一文件只存一份）
+       *   md5: string | null
        * }
        * ```
        *
@@ -17689,6 +17207,8 @@ declare global {
        *     size: string | null
        *     // 业务场景（上传时携带，用于追溯具体业务来源）
        *     scene: string | null
+       *     // 文件内容 MD5（小写 32 位；上传查重用，同一文件只存一份）
+       *     md5: string | null
        *   }
        *   msg: string
        *   success: boolean
@@ -17827,62 +17347,6 @@ declare global {
       /**
        * ---
        *
-       * [GET] 读取文件流
-       *
-       * **path:** /api/FileRecord/Read
-       *
-       * ---
-       *
-       * **Query Parameters**
-       * ```ts
-       * type QueryParameters = {
-       *   // 文件记录 id
-       *   id: string
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   data: null
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      Read<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          data: null;
-          msg: string;
-          success: boolean;
-        }> & {
-          params: {
-            /**
-             * 文件记录 id
-             */
-
-            id: string;
-          };
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          data: null;
-          msg: string;
-          success: boolean;
-        },
-        'FileRecord.Read',
-        Config
-      >;
-      /**
-       * ---
-       *
        * [PUT] 编辑
        *
        * **path:** /api/FileRecord/Update
@@ -17922,6 +17386,8 @@ declare global {
        *   size: string | null
        *   // 业务场景（上传时携带，用于追溯具体业务来源）
        *   scene: string | null
+       *   // 文件内容 MD5（小写 32 位；上传查重用，同一文件只存一份）
+       *   md5: string | null
        * }
        * ```
        *
@@ -18019,336 +17485,6 @@ declare global {
           success: boolean;
         },
         'FileRecord.Upload',
-        Config
-      >;
-    };
-    I18n: {
-      /**
-       * ---
-       *
-       * [POST] 新增
-       *
-       * **path:** /api/I18n/Add
-       *
-       * ---
-       *
-       * **RequestBody**
-       * ```ts
-       * type RequestBody = {
-       *   // 主键
-       *   id: string
-       *   // 创建者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *   createId: string | null
-       *   // 创建时间
-       *   createTime: string
-       *   // 更新者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *   updateId: string | null
-       *   // 最后更新时间
-       *   updateTime: string | null
-       *   // 是否已删除
-       *   isDeleted: boolean
-       *   // 键
-       *   key: string | null
-       *   // 中文
-       *   zhCn: string | null
-       *   // 英文
-       *   enUs: string | null
-       *   // 来源
-       *   source: string | null
-       *   // 访问次数
-       *   count: number
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   data: string
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      Add<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          data: string;
-          msg: string;
-          success: boolean;
-        }> & {
-          data: UpdateI18nParam;
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          data: string;
-          msg: string;
-          success: boolean;
-        },
-        'I18n.Add',
-        Config
-      >;
-      /**
-       * ---
-       *
-       * [DELETE] 删除
-       *
-       * **path:** /api/I18n/Delete
-       *
-       * ---
-       *
-       * **RequestBody**
-       * ```ts
-       * type RequestBody = string[]
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   data: number
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      Delete<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          data: number;
-          msg: string;
-          success: boolean;
-        }> & {
-          data: string[];
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          data: number;
-          msg: string;
-          success: boolean;
-        },
-        'I18n.Delete',
-        Config
-      >;
-      /**
-       * ---
-       *
-       * [GET] 根据语言获取国际化字典
-       *
-       * **path:** /api/I18n/GetByLocale
-       *
-       * ---
-       *
-       * **Query Parameters**
-       * ```ts
-       * type QueryParameters = {
-       *   locale: string
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   data: Record<string, string>
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      GetByLocale<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          data: Record<string, string>;
-          msg: string;
-          success: boolean;
-        }> & {
-          params: {
-            locale: string;
-          };
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          data: Record<string, string>;
-          msg: string;
-          success: boolean;
-        },
-        'I18n.GetByLocale',
-        Config
-      >;
-      /**
-       * ---
-       *
-       * [GET] 分页查询
-       *
-       * **path:** /api/I18n/GetPage
-       *
-       * ---
-       *
-       * **Query Parameters**
-       * ```ts
-       * type QueryParameters = {
-       *   StartIndex: number
-       *   PageIndex: number
-       *   PageSize: number
-       *   Search: Record<string, Record<string, string>>
-       *   SortList: Record<string, 1 | 2>
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   data: {
-       *     pagerInfo: {
-       *       totalRowCount: number
-       *       pageSize: number
-       *       startIndex: number
-       *       pageIndex: number
-       *       hasPrev: boolean
-       *       hasNext: boolean
-       *       isFirst: boolean
-       *       isLast: boolean
-       *       totalPageCount: number
-       *     }
-       *     // [params1] start
-       *     // [items] start
-       *     // 分页
-       *     // [items] end
-       *     // [params1] end
-       *     data: Array<{
-       *       // 主键
-       *       id: string
-       *       // 键
-       *       key: string | null
-       *       // 中文
-       *       zhCn: string | null
-       *       // 英文
-       *       enUs: string | null
-       *       // 来源
-       *       source: string | null
-       *       // 访问次数
-       *       count: number
-       *     }> | null
-       *   }
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      GetPage<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          data: I18nDTOPagedResults;
-          msg: string;
-          success: boolean;
-        }> & {
-          params: {
-            StartIndex: number;
-            PageIndex: number;
-            PageSize: number;
-            Search: Record<string, Record<string, string>>;
-            SortList: Record<string, OrderTypeEnum>;
-          };
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          data: I18nDTOPagedResults;
-          msg: string;
-          success: boolean;
-        },
-        'I18n.GetPage',
-        Config
-      >;
-      /**
-       * ---
-       *
-       * [PUT] 编辑
-       *
-       * **path:** /api/I18n/Update
-       *
-       * ---
-       *
-       * **RequestBody**
-       * ```ts
-       * type RequestBody = {
-       *   // 主键
-       *   id: string
-       *   // 创建者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *   createId: string | null
-       *   // 创建时间
-       *   createTime: string
-       *   // 更新者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *   updateId: string | null
-       *   // 最后更新时间
-       *   updateTime: string | null
-       *   // 是否已删除
-       *   isDeleted: boolean
-       *   // 键
-       *   key: string | null
-       *   // 中文
-       *   zhCn: string | null
-       *   // 英文
-       *   enUs: string | null
-       *   // 来源
-       *   source: string | null
-       *   // 访问次数
-       *   count: number
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   data: string
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      Update<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          data: string;
-          msg: string;
-          success: boolean;
-        }> & {
-          data: UpdateI18nParam;
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          data: string;
-          msg: string;
-          success: boolean;
-        },
-        'I18n.Update',
         Config
       >;
     };
@@ -22069,18 +21205,21 @@ declare global {
       /**
        * ---
        *
-       * [DELETE] 强制登出用户
+       * [DELETE] 强制登出单设备（按用户 + 客户端类型 + 设备ID 三段定位唯一在线会话）
        *
        * **path:** /api/OnlineUser/DropOut
        *
        * ---
        *
-       * **RequestBody**
+       * **Query Parameters**
        * ```ts
-       * type RequestBody = {
-       *   // [items] start
-       *   // [items] end
-       *   idArray: string[]
+       * type QueryParameters = {
+       *   // 用户ID
+       *   userId: string
+       *   // 客户端类型（VersionEnum 名，如 Pc）
+       *   apiVersion: string
+       *   // 设备ID，无设备头时为空
+       *   deviceId: string
        * }
        * ```
        *
@@ -22103,7 +21242,23 @@ declare global {
           msg: string;
           success: boolean;
         }> & {
-          data: IdCollectionString;
+          params: {
+            /**
+             * 用户ID
+             */
+
+            userId: string;
+            /**
+             * 客户端类型（VersionEnum 名，如 Pc）
+             */
+
+            apiVersion: string;
+            /**
+             * 设备ID，无设备头时为空
+             */
+
+            deviceId: string;
+          };
         }
       >(
         config: Config
@@ -22115,6 +21270,62 @@ declare global {
           success: boolean;
         },
         'OnlineUser.DropOut',
+        Config
+      >;
+      /**
+       * ---
+       *
+       * [DELETE] 强制登出用户所有在线设备
+       *
+       * **path:** /api/OnlineUser/DropOutAll
+       *
+       * ---
+       *
+       * **Query Parameters**
+       * ```ts
+       * type QueryParameters = {
+       *   // 用户ID
+       *   userId: string
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = {
+       *   code: string
+       *   data: null
+       *   msg: string
+       *   success: boolean
+       * }
+       * ```
+       */
+      DropOutAll<
+        Config extends Alova2MethodConfig<{
+          code: string;
+          data: null;
+          msg: string;
+          success: boolean;
+        }> & {
+          params: {
+            /**
+             * 用户ID
+             */
+
+            userId: string;
+          };
+        }
+      >(
+        config: Config
+      ): Alova2Method<
+        {
+          code: string;
+          data: null;
+          msg: string;
+          success: boolean;
+        },
+        'OnlineUser.DropOutAll',
         Config
       >;
       /**
@@ -22161,6 +21372,7 @@ declare global {
        *     // [items] end
        *     // [params1] end
        *     data: Array<{
+       *       id: string
        *       // 用户ID
        *       userId: string
        *       // 用户名
@@ -33556,709 +32768,6 @@ declare global {
           success: boolean;
         },
         'Sms.Update',
-        Config
-      >;
-    };
-    TableForm: {
-      /**
-       * ---
-       *
-       * [GET] 获取表字段
-       *
-       * **path:** /api/TableForm/GetEdit
-       *
-       * ---
-       *
-       * **Query Parameters**
-       * ```ts
-       * type QueryParameters = {
-       *   Tableof: string
-       *   Router: string
-       *   ConfigId: string
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   // 表格重写
-       *   data: {
-       *     // 主键
-       *     id: string
-       *     // 创建者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *     createId: string | null
-       *     // 创建时间
-       *     createTime: string
-       *     // 更新者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *     updateId: string | null
-       *     // 最后更新时间
-       *     updateTime: string | null
-       *     // 是否已删除
-       *     isDeleted: boolean
-       *     // 表名
-       *     tableof: string | null
-       *     // 路由
-       *     router: string | null
-       *     // 多余参数
-       *     attrs: string | null
-       *     // 多余参数
-       *     configId: string | null
-       *     // 组件
-       *     componentString: string | null
-       *     // 表配置
-       *     optionString: string | null
-       *     // 组件
-       *     // [params1] start
-       *     // [items] start
-       *     // 表格重写
-       *     // [items] end
-       *     // [params1] end
-       *     components: Array<{
-       *       // 字段名称
-       *       label: string | null
-       *       // 字段
-       *       prop: string | null
-       *       type: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 50
-       *       // 是否必填
-       *       required: boolean
-       *       // 是否自定义
-       *       isCustom: boolean
-       *       // 排序
-       *       sort: number
-       *       // 是否逻辑删除
-       *       isEditDel: boolean
-       *       // 是否显示
-       *       isShow: boolean
-       *       // 插槽
-       *       slots: Record<string, string> | null
-       *       // 参数
-       *       attrs: Record<string, string> | null
-       *       // [params1] start
-       *       // [items] start
-       *       // [items] end
-       *       // [params1] end
-       *       metadata: Array<{
-       *         // 属性
-       *         attributes: Record<string, string> | null
-       *         // 插槽
-       *         slots: Record<string, string> | null
-       *         // 事件
-       *         events: Record<string, string> | null
-       *         // 组件支持的方法
-       *         methods: Record<string, string> | null
-       *       }> | null
-       *       // [params1] start
-       *       // [items] start
-       *       // [cycle] $.data.components.[]
-       *       // [items] end
-       *       // [params1] end
-       *       children: FormComponent[] | null
-       *     }> | null
-       *   }
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      GetEdit<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          /**
-           * 表格重写
-           */
-
-          data: TableForm;
-          msg: string;
-          success: boolean;
-        }> & {
-          params: {
-            Tableof: string;
-            Router: string;
-            ConfigId: string;
-          };
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          /**
-           * 表格重写
-           */
-
-          data: TableForm;
-          msg: string;
-          success: boolean;
-        },
-        'TableForm.GetEdit',
-        Config
-      >;
-      /**
-       * ---
-       *
-       * [GET] 表头信息获取
-       *
-       * **path:** /api/TableForm/GetView
-       *
-       * ---
-       *
-       * **Query Parameters**
-       * ```ts
-       * type QueryParameters = {
-       *   Tableof: string
-       *   Router: string
-       *   ConfigId: string
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   // 表格重写
-       *   data: {
-       *     // 主键
-       *     id: string
-       *     // 创建者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *     createId: string | null
-       *     // 创建时间
-       *     createTime: string
-       *     // 更新者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *     updateId: string | null
-       *     // 最后更新时间
-       *     updateTime: string | null
-       *     // 是否已删除
-       *     isDeleted: boolean
-       *     // 表名
-       *     tableof: string | null
-       *     // 路由
-       *     router: string | null
-       *     // 多余参数
-       *     attrs: string | null
-       *     // 多余参数
-       *     configId: string | null
-       *     // 组件
-       *     componentString: string | null
-       *     // 表配置
-       *     optionString: string | null
-       *     // 组件
-       *     // [params1] start
-       *     // [items] start
-       *     // 表格重写
-       *     // [items] end
-       *     // [params1] end
-       *     components: Array<{
-       *       // 字段名称
-       *       label: string | null
-       *       // 字段
-       *       prop: string | null
-       *       type: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 50
-       *       // 是否必填
-       *       required: boolean
-       *       // 是否自定义
-       *       isCustom: boolean
-       *       // 排序
-       *       sort: number
-       *       // 是否逻辑删除
-       *       isEditDel: boolean
-       *       // 是否显示
-       *       isShow: boolean
-       *       // 插槽
-       *       slots: Record<string, string> | null
-       *       // 参数
-       *       attrs: Record<string, string> | null
-       *       // [params1] start
-       *       // [items] start
-       *       // [items] end
-       *       // [params1] end
-       *       metadata: Array<{
-       *         // 属性
-       *         attributes: Record<string, string> | null
-       *         // 插槽
-       *         slots: Record<string, string> | null
-       *         // 事件
-       *         events: Record<string, string> | null
-       *         // 组件支持的方法
-       *         methods: Record<string, string> | null
-       *       }> | null
-       *       // [params1] start
-       *       // [items] start
-       *       // [cycle] $.data.components.[]
-       *       // [items] end
-       *       // [params1] end
-       *       children: FormComponent[] | null
-       *     }> | null
-       *   }
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      GetView<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          /**
-           * 表格重写
-           */
-
-          data: TableForm;
-          msg: string;
-          success: boolean;
-        }> & {
-          params: {
-            Tableof: string;
-            Router: string;
-            ConfigId: string;
-          };
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          /**
-           * 表格重写
-           */
-
-          data: TableForm;
-          msg: string;
-          success: boolean;
-        },
-        'TableForm.GetView',
-        Config
-      >;
-      /**
-       * ---
-       *
-       * [POST] 编辑模型
-       *
-       * **path:** /api/TableForm/SetEdit
-       *
-       * ---
-       *
-       * **RequestBody**
-       * ```ts
-       * type RequestBody = {
-       *   // 主键
-       *   id: string
-       *   // 配置库
-       *   configId: string | null
-       *   // 路由
-       *   router: string | null
-       *   // 表名
-       *   tableof: string
-       *   // 多余参数
-       *   attrs: string | null
-       *   // 组件
-       *   // [params1] start
-       *   // [items] start
-       *   // 表格重写
-       *   // [items] end
-       *   // [params1] end
-       *   components: Array<{
-       *     // 字段名称
-       *     label: string | null
-       *     // 字段
-       *     prop: string | null
-       *     type: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 50
-       *     // 是否必填
-       *     required: boolean
-       *     // 是否自定义
-       *     isCustom: boolean
-       *     // 排序
-       *     sort: number
-       *     // 是否逻辑删除
-       *     isEditDel: boolean
-       *     // 是否显示
-       *     isShow: boolean
-       *     // 插槽
-       *     slots: Record<string, string> | null
-       *     // 参数
-       *     attrs: Record<string, string> | null
-       *     // [params1] start
-       *     // [items] start
-       *     // [items] end
-       *     // [params1] end
-       *     metadata: Array<{
-       *       // 属性
-       *       attributes: Record<string, string> | null
-       *       // 插槽
-       *       slots: Record<string, string> | null
-       *       // 事件
-       *       events: Record<string, string> | null
-       *       // 组件支持的方法
-       *       methods: Record<string, string> | null
-       *     }> | null
-       *     // [params1] start
-       *     // [items] start
-       *     // [cycle] $.components.[]
-       *     // [items] end
-       *     // [params1] end
-       *     children: FormComponent[] | null
-       *   }> | null
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   data: string
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      SetEdit<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          data: string;
-          msg: string;
-          success: boolean;
-        }> & {
-          data: UpdateTableFormParam;
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          data: string;
-          msg: string;
-          success: boolean;
-        },
-        'TableForm.SetEdit',
-        Config
-      >;
-    };
-    TableView: {
-      /**
-       * ---
-       *
-       * [GET] 获取表字段
-       *
-       * **path:** /api/TableView/GetEdit
-       *
-       * ---
-       *
-       * **Query Parameters**
-       * ```ts
-       * type QueryParameters = {
-       *   Tableof: string
-       *   Router: string
-       *   ConfigId: string
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   data: {
-       *     // 主键
-       *     id: string
-       *     // 配置库
-       *     configId: string | null
-       *     // 路由
-       *     router: string | null
-       *     // 表名
-       *     tableof: string
-       *     // 多余参数
-       *     attrs: string | null
-       *     // 字段
-       *     columnsString: string | null
-       *     // 默认排序字段
-       *     sortString: string | null
-       *     // 字段
-       *     // [params1] start
-       *     // [items] start
-       *     // 表字段重写
-       *     // [items] end
-       *     // [params1] end
-       *     columns: Array<{
-       *       // 字段名称
-       *       label: string | null
-       *       // 字段
-       *       prop: string | null
-       *       searchType: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17
-       *       // 字段描述
-       *       columnTypeDetail: string | null
-       *       // 字段验证
-       *       columnTypeRules: string | null
-       *       // 是否自定义
-       *       isCustom: boolean
-       *       // 排序
-       *       sort: number
-       *       // 是否逻辑删除
-       *       isEditDel: boolean
-       *       // 是否显示
-       *       isShow: boolean
-       *       // 是否Excel
-       *       isExcel: boolean
-       *       // 多余参数
-       *       attrs: string | null
-       *       // 头部多余参数
-       *       headAttrsString: string | null
-       *       // 是否选中
-       *       checked: boolean
-       *     }> | null
-       *     // 多列排序
-       *     sorts: Record<string, 1 | 2> | null
-       *   }
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      GetEdit<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          data: TableViewInfo;
-          msg: string;
-          success: boolean;
-        }> & {
-          params: {
-            Tableof: string;
-            Router: string;
-            ConfigId: string;
-          };
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          data: TableViewInfo;
-          msg: string;
-          success: boolean;
-        },
-        'TableView.GetEdit',
-        Config
-      >;
-      /**
-       * ---
-       *
-       * [GET] 表头信息获取
-       *
-       * **path:** /api/TableView/GetView
-       *
-       * ---
-       *
-       * **Query Parameters**
-       * ```ts
-       * type QueryParameters = {
-       *   Tableof: string
-       *   Router: string
-       *   ConfigId: string
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   // 表格重写
-       *   data: {
-       *     // 主键
-       *     id: string
-       *     // 创建者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *     createId: string | null
-       *     // 创建时间
-       *     createTime: string
-       *     // 更新者ID（恒为平台用户ID，固定 long，不随主键类型）
-       *     updateId: string | null
-       *     // 最后更新时间
-       *     updateTime: string | null
-       *     // 是否已删除
-       *     isDeleted: boolean
-       *     // 配置库
-       *     configId: string | null
-       *     // 路由
-       *     router: string | null
-       *     // 表名
-       *     tableof: string
-       *     // 多余参数
-       *     attrs: string | null
-       *     // 字段
-       *     columnsString: string | null
-       *     // 默认排序字段
-       *     sortString: string | null
-       *     // 字段
-       *     // [params1] start
-       *     // [items] start
-       *     // 表字段重写
-       *     // [items] end
-       *     // [params1] end
-       *     columns: Array<{
-       *       // 字段名称
-       *       label: string | null
-       *       // 字段
-       *       prop: string | null
-       *       searchType: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17
-       *       // 字段描述
-       *       columnTypeDetail: string | null
-       *       // 字段验证
-       *       columnTypeRules: string | null
-       *       // 是否自定义
-       *       isCustom: boolean
-       *       // 排序
-       *       sort: number
-       *       // 是否逻辑删除
-       *       isEditDel: boolean
-       *       // 是否显示
-       *       isShow: boolean
-       *       // 是否Excel
-       *       isExcel: boolean
-       *       // 多余参数
-       *       attrs: string | null
-       *       // 头部多余参数
-       *       headAttrsString: string | null
-       *       // 是否选中
-       *       checked: boolean
-       *     }> | null
-       *     // 多列排序
-       *     sorts: Record<string, 1 | 2> | null
-       *   }
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      GetView<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          /**
-           * 表格重写
-           */
-
-          data: TableView;
-          msg: string;
-          success: boolean;
-        }> & {
-          params: {
-            Tableof: string;
-            Router: string;
-            ConfigId: string;
-          };
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          /**
-           * 表格重写
-           */
-
-          data: TableView;
-          msg: string;
-          success: boolean;
-        },
-        'TableView.GetView',
-        Config
-      >;
-      /**
-       * ---
-       *
-       * [POST] 编辑模型
-       *
-       * **path:** /api/TableView/SetEdit
-       *
-       * ---
-       *
-       * **RequestBody**
-       * ```ts
-       * type RequestBody = {
-       *   // 主键
-       *   id: string
-       *   // 配置库
-       *   configId: string | null
-       *   // 路由
-       *   router: string | null
-       *   // 表名
-       *   tableof: string
-       *   // 多余参数
-       *   attrs: string | null
-       *   // 字段
-       *   // [params1] start
-       *   // [items] start
-       *   // 表字段重写
-       *   // [items] end
-       *   // [params1] end
-       *   columns: Array<{
-       *     // 字段名称
-       *     label: string | null
-       *     // 字段
-       *     prop: string | null
-       *     searchType: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17
-       *     // 字段描述
-       *     columnTypeDetail: string | null
-       *     // 字段验证
-       *     columnTypeRules: string | null
-       *     // 是否自定义
-       *     isCustom: boolean
-       *     // 排序
-       *     sort: number
-       *     // 是否逻辑删除
-       *     isEditDel: boolean
-       *     // 是否显示
-       *     isShow: boolean
-       *     // 是否Excel
-       *     isExcel: boolean
-       *     // 多余参数
-       *     attrs: string | null
-       *     // 头部多余参数
-       *     headAttrsString: string | null
-       *     // 是否选中
-       *     checked: boolean
-       *   }> | null
-       *   // 默认排序字段
-       *   sorts: Record<string, 1 | 2>
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   code: string
-       *   data: string
-       *   msg: string
-       *   success: boolean
-       * }
-       * ```
-       */
-      SetEdit<
-        Config extends Alova2MethodConfig<{
-          code: string;
-          data: string;
-          msg: string;
-          success: boolean;
-        }> & {
-          data: UpdateTableViewParam;
-        }
-      >(
-        config: Config
-      ): Alova2Method<
-        {
-          code: string;
-          data: string;
-          msg: string;
-          success: boolean;
-        },
-        'TableView.SetEdit',
         Config
       >;
     };

@@ -7,10 +7,8 @@ import { IconTypeEnum, LayoutTypeEnum, MenuTypeEnum } from '@/api/apiEnums';
 import { useForm as useCommonForm } from '@/hooks/common/form';
 import { getLocalIcons } from '@/utils/icon';
 import { getEnumValue } from '@/utils/common';
-import createComponent from '@/utils/createComponent';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import { $t } from '@/locales';
-import I18nDrawer from '@/components/i18n/i18n-drawer.vue';
 import TreeSelect from './tree-select.vue';
 defineOptions({
   name: 'MenuEditForm'
@@ -193,14 +191,6 @@ watch(
     }
   }
 );
-const openI180n = async () => {
-  const { on, unmount } = await createComponent(I18nDrawer, { visible: true });
-  on('update:visible', res => {
-    if (!res) {
-      unmount();
-    }
-  });
-};
 
 // // 高亮
 // // 把主页的菜单全传入
@@ -342,16 +332,6 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
                 :placeholder="$t('common.placeholder') + $t('menu.menuName')"
                 class="flex-1"
               />
-              <ElText
-                type="primary"
-                @click="
-                  () => {
-                    openI180n();
-                  }
-                "
-              >
-                {{ $t('common.i18n') }}
-              </ElText>
             </ElFormItem>
           </ElCol>
           <ElCol :span="12">

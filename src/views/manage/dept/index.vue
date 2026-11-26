@@ -4,12 +4,13 @@ import { useRoute } from 'vue-router';
 import type { TableColumnCtx } from 'element-plus';
 import { ElButton, ElCard, ElPopconfirm, ElSpace, ElTable, ElTableColumn, ElTag } from 'element-plus';
 import Apis from '@/api';
-import type { DeptTreeDTO, TableColumn, TableView } from '@/api/globals';
+import type { DeptTreeDTO } from '@/api/globals';
+import type { TableColumn } from '@/typings/table';
 import { ConditionalType } from '@/api/sqlSugar';
 import downloadExcel from '@/utils/downloadExcel';
 import createComponent from '@/utils/createComponent';
 import { $t } from '@/locales';
-import CustomHeader from '@/views/configprovider/table/modules/customHeader.vue';
+import CustomHeader from '@/components/advanced/custom-header.vue';
 import EditForm from './modules/edit-form.vue';
 import { useRequest } from '~/packages/alova/src/client';
 
@@ -35,33 +36,22 @@ const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
   }
 ];
 
-// columns 仅接受后端返回的原始列配置；columnData 为生效列（初始默认列，loadChange 后合并后端列），供列设置管理与表格渲染
-const columns = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([]);
-// 列设置候选：初始为默认列，loadChange 后合并为「后端配置列 + 默认列」
+// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
 // 表头搜索条件
 const searchParams = ref<Record<string, Record<string, string>>>({});
 // 多选行（表格 selection 列联动，供批量删除使用）
 const checkedRowKeys = ref<string[]>([]);
 
-// 表格视图配置加载回调：后端列与默认列按 prop 去重合并进 columnData，后端配置优先，默认列补充后端未配置的字段
-const loadChange = (table: TableView) => {
-  columns.value = (table?.columns || []) as Array<Partial<TableColumnCtx<DataType> & TableColumn>>;
 
-  const backendProps = new Set(columns.value.map(item => item.prop));
-  columnData.value = [...columns.value, ...defaultColumns.filter(item => !backendProps.has(item.prop as string))];
-};
-
-// 渲染列：按列设置勾选过滤（全不勾选即空表）；attrs 中的渲染函数展开为 Element Plus 列属性
+// 渲染列：按列设置勾选过滤（全不勾选即空表）
 const tableColumns = computed<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(() => {
   return columnData.value
     .filter(item => item.checked)
     .map(item => {
       return {
         ...item,
-        // eslint-disable-next-line no-eval
-        ...(item.attrs ? eval(`(${item.attrs})`) : {}),
-        className: !item.isExcel ? 'onExcel' : '',
+        className: item.isExcel === false ? 'onExcel' : '',
         prop: item.prop,
         label: $t(item.label as string)
       } as Partial<TableColumnCtx<DataType> & TableColumn>;
@@ -163,7 +153,6 @@ const openForm = async (id: string | null) => {
         <div class="flex items-center justify-between">
           <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
           <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
-            <TableViewSetting tableof="DeptDTO" router="" config-id="" @load-change="loadChange" />
             <ElButton ghost type="primary" @click="openForm(null)">
               <template #icon>
                 <icon-ic-round-plus class="text-icon" />

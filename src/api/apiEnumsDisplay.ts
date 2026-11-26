@@ -3,7 +3,6 @@
 // 与 apiEnums.ts 同步生成，仅含 swagger 实际引用的枚举。
 
 import {
-  ColumnTypeEnum,
   IconTypeEnum,
   LayoutTypeEnum,
   MenuTypeEnum,

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { TableColumnCtx } from 'element-plus';
-import type { TableColumn } from '@/api/globals';
+import type { TableColumn } from '@/typings/table';
 import { $t } from '@/locales';
-import type { ComponentApi } from '@/views/configprovider/table/types';
 
 defineOptions({ name: 'TableHeaderOperation' });
 
@@ -21,9 +20,7 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
-const columns = defineModel<
-  Array<Partial<TableColumnCtx<TableColumn>> & { headAttrs?: ComponentApi; checked?: boolean }>
->('columns', {
+const columns = defineModel<Array<Partial<TableColumnCtx<TableColumn>>>>('columns', {
   default: () => []
 });
 

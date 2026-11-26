@@ -4,14 +4,15 @@ import { useRoute } from 'vue-router';
 import type { Sort, TableColumnCtx } from 'element-plus';
 import { ElButton, ElCard, ElPagination, ElSpace, ElTabPane, ElTable, ElTableColumn, ElTabs } from 'element-plus';
 import Apis from '@/api';
-import type { ApisDTO, TableColumn, TableView } from '@/api/globals';
+import type { ApisDTO } from '@/api/globals';
+import type { TableColumn } from '@/typings/table';
 import type { OrderTypeEnum } from '@/api/apiEnums';
 import { VersionEnum } from '@/api/apiEnums';
 import { ConditionalType } from '@/api/sqlSugar';
 import { getEnumValue } from '@/utils/common';
 import downloadExcel from '@/utils/downloadExcel';
 import { $t } from '@/locales';
-import CustomHeader from '@/views/configprovider/table/modules/customHeader.vue';
+import CustomHeader from '@/components/advanced/custom-header.vue';
 import { usePagination, useRequest } from '~/packages/alova/src/client';
 
 defineOptions({ name: 'Apis' });
@@ -32,9 +33,7 @@ const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
   { prop: 'description', label: '描述', searchType: ConditionalType.Like, checked: true }
 ];
 
-// columns 仅接受后端返回的原始列配置；columnData 为生效列（初始默认列，loadChange 后合并后端列），供列设置管理与表格渲染
-const columns = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([]);
-// 列设置候选：初始为默认列，loadChange 后合并为「后端配置列 + 默认列」
+// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}
@@ -42,29 +41,17 @@ const dataTableConfig = ref<UI.DataTableConfig>({
 // 表头搜索条件
 const searchParams = ref<Record<string, Record<string, string>>>({});
 
-// 表格视图配置加载回调；dataTableConfig 被 deep watch，赋值后触发分页请求
-const loadChange = (table: TableView) => {
-  columns.value = (table?.columns || []) as Array<Partial<TableColumnCtx<DataType> & TableColumn>>;
 
-  // 后端列与默认列按 prop 去重合并进 columnData：后端配置优先，checked 跟随后端 isShow，默认列补充后端未配置的字段
-  const backendProps = new Set(columns.value.map(item => item.prop));
-  columnData.value = [...columns.value, ...defaultColumns.filter(item => !backendProps.has(item.prop as string))];
-
-  if (dataTableConfig.value) dataTableConfig.value.sortList = table?.sorts || {};
-};
-
-// 渲染列：按列设置勾选过滤（全不勾选即空表）；attrs 中的渲染函数展开为 Element Plus 列属性
+// 渲染列：按列设置勾选过滤（全不勾选即空表）
 const tableColumns = computed<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(() => {
   return columnData.value
     .filter(item => item.checked)
     .map(item => {
       return {
         ...item,
-        // eslint-disable-next-line no-eval
-        ...(item.attrs ? eval(`(${item.attrs})`) : {}),
-        className: !item.isExcel ? 'onExcel' : '',
+        className: item.isExcel === false ? 'onExcel' : '',
         prop: item.prop,
-        label: $t(item.label as string),
+        label: item.label as string,
         sortable: 'custom'
       } as Partial<TableColumnCtx<DataType> & TableColumn>;
     });
@@ -158,7 +145,6 @@ const loading = computed<boolean>(() => refreshLoading.value || dataLoading.valu
         <div class="flex items-center justify-between">
           <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
           <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
-            <TableViewSetting tableof="ApisDTO" router="" config-id="" @load-change="loadChange" />
             <!-- API 路由由后端扫描生成，仅提供更新入口，无新增/删除 -->
             <ElButton ghost type="primary" @click="refreshApis">
               <template #icon>

@@ -4,12 +4,13 @@ import { useRoute } from 'vue-router';
 import type { Sort, TableColumnCtx } from 'element-plus';
 import { ElButton, ElCard, ElPagination, ElPopconfirm, ElSpace, ElTable, ElTableColumn, ElTag } from 'element-plus';
 import Apis from '@/api';
-import type { OnlineUserDTO, TableColumn, TableView } from '@/api/globals';
+import type { OnlineUserDTO } from '@/api/globals';
+import type { TableColumn } from '@/typings/table';
 import type { OrderTypeEnum } from '@/api/apiEnums';
 import { ConditionalType } from '@/api/sqlSugar';
 import downloadExcel from '@/utils/downloadExcel';
 import { $t } from '@/locales';
-import CustomHeader from '@/views/configprovider/table/modules/customHeader.vue';
+import CustomHeader from '@/components/advanced/custom-header.vue';
 import { usePagination, useRequest } from '~/packages/alova/src/client';
 
 defineOptions({ name: 'OnlineUser' });
@@ -27,36 +28,27 @@ const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
   { prop: 'ip', label: '登录IP', searchType: ConditionalType.Like, checked: true },
   { prop: 'address', label: 'IP归属地', searchType: ConditionalType.Like, checked: true },
   { prop: 'browserName', label: '浏览器', checked: true },
+  { prop: 'apiVersion', label: '客户端类型', checked: true },
+  { prop: 'deviceId', label: '设备ID', checked: true },
   { prop: 'loginTime', label: '登录时间', checked: true }
 ];
 
-// columns 存后端返回的原始列配置；columnData 为生效列（初始默认列），供列设置管理与表格渲染
-const columns = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([]);
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
 const dataTableConfig = ref<UI.DataTableConfig>({ sortList: {} });
 // 表头搜索条件
 const searchParams = ref<Record<string, Record<string, string>>>({});
 
-// TableViewSetting 加载回调：后端列与默认列按 prop 去重合并进 columnData，后端配置优先，默认列补充后端未配置的字段
-const loadChange = (table: TableView) => {
-  columns.value = (table?.columns || []) as Array<Partial<TableColumnCtx<DataType> & TableColumn>>;
-  const backendProps = new Set(columns.value.map(item => item.prop));
-  columnData.value = [...columns.value, ...defaultColumns.filter(item => !backendProps.has(item.prop as string))];
-  if (dataTableConfig.value) dataTableConfig.value.sortList = table?.sorts || {};
-};
 
-// 渲染列：按列设置勾选过滤（全不勾选即空表）；attrs 中的渲染函数展开为 Element Plus 列属性
+// 渲染列：按列设置勾选过滤（全不勾选即空表）
 const tableColumns = computed<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(() => {
   return columnData.value
     .filter(item => item.checked)
     .map(item => {
       return {
         ...item,
-        // eslint-disable-next-line no-eval
-        ...(item.attrs ? eval(`(${item.attrs})`) : {}),
-        className: !item.isExcel ? 'onExcel' : '',
+        className: item.isExcel === false ? 'onExcel' : '',
         prop: item.prop,
-        label: $t(item.label as string),
+        label: item.label as string,
         sortable: 'custom'
       } as Partial<TableColumnCtx<DataType> & TableColumn>;
     });
@@ -95,13 +87,27 @@ const {
   }
 );
 
-/** 强制下线（踢出）：在线用户无删除接口，用 DropOut 替代 */
+/** 强制下线单设备：按行数据的 用户ID + 客户端类型 + 设备ID 定位唯一在线会话 */
 const { send: handleDropOut, loading: dropLoading } = useRequest(
-  (ids: string[]) =>
+  (row: DataType) =>
     Apis.OnlineUser.DropOut({
-      data: { idArray: ids },
+      params: { userId: row.userId, apiVersion: row.apiVersion || '', deviceId: row.deviceId || '' },
       transform: res => {
         window.$message?.success('已强制下线！');
+        getData(page.value, pageSize.value);
+        return res.data;
+      }
+    }),
+  { force: true, immediate: false }
+);
+
+/** 下线该用户所有设备 */
+const { send: handleDropOutAll, loading: dropAllLoading } = useRequest(
+  (row: DataType) =>
+    Apis.OnlineUser.DropOutAll({
+      params: { userId: row.userId },
+      transform: res => {
+        window.$message?.success('已下线该用户所有设备！');
         getData(page.value, pageSize.value);
         return res.data;
       }
@@ -119,8 +125,8 @@ const handleClose = (prop: string) => {
   delete searchParams.value[prop];
 };
 
-// 表格加载与强制下线请求合并，工具栏刷新动画两者都覆盖
-const loading = computed<boolean>(() => dropLoading.value || dataLoading.value);
+// 表格加载与两个强退请求合并，工具栏刷新动画两者都覆盖
+const loading = computed<boolean>(() => dropLoading.value || dropAllLoading.value || dataLoading.value);
 </script>
 
 <template>
@@ -130,7 +136,6 @@ const loading = computed<boolean>(() => dropLoading.value || dataLoading.value);
         <div class="flex items-center justify-between">
           <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
           <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
-            <TableViewSetting tableof="OnlineUserDTO" router="" config-id="" @load-change="loadChange" />
             <!-- 在线用户只读：无新增与批量删除，仅保留导出与刷新 -->
             <ElButton ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
               <template #icon>
@@ -175,12 +180,17 @@ const loading = computed<boolean>(() => dropLoading.value || dataLoading.value);
                 <CustomHeader v-model="searchParams" :column="item" />
               </template>
             </ElTableColumn>
-            <ElTableColumn prop="use" label="操作" align="center" width="120" fixed="right">
+            <ElTableColumn prop="use" label="操作" align="center" width="220" fixed="right">
               <template #default="{ row }">
-                <div class="flex-center pr-10px">
-                  <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDropOut([row.userId])">
+                <div class="flex flex-wrap justify-center gap-8px pr-10px">
+                  <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDropOut(row)">
                     <template #reference>
                       <ElButton type="warning" plain size="small">{{ $t('强制下线') }}</ElButton>
+                    </template>
+                  </ElPopconfirm>
+                  <ElPopconfirm :title="$t('确认下线该用户所有设备？')" @confirm="handleDropOutAll(row)">
+                    <template #reference>
+                      <ElButton type="danger" plain size="small">{{ $t('下线全部设备') }}</ElButton>
                     </template>
                   </ElPopconfirm>
                 </div>

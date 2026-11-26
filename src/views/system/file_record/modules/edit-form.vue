@@ -59,8 +59,8 @@ const statusTypeMap: Record<number, 'info' | 'warning' | 'success' | 'danger'> =
 /** ElUpload 仅作选择/拖拽入口（隐藏自带列表），选中文件转入 alova fileList 统一管理 */
 const onFileChange = (uploadFile: UploadFile) => {
   if (uploadFile.raw) {
-    // appendFiles 接收 AlovaRawFile（{ file: File }），不能传裸 File，否则类型转换器匹配失败
-    appendFiles(uploadFile as unknown as File);
+    // 必须传 AlovaRawFile 数组（[{ file: File }]）：传裸 File 会被 alova 判成配置对象而触发 selectFile 二次弹框，且转换器匹配失败
+    appendFiles([{ file: uploadFile.raw }]);
   }
 };
 

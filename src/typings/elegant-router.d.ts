@@ -35,13 +35,6 @@ declare module "@elegant-router/types" {
     "404": "/404";
     "500": "/500";
     "background": "/background";
-    "configprovider": "/configprovider";
-    "configprovider_form-designer": "/configprovider/form-designer";
-    "configprovider_i18n": "/configprovider/i18n";
-    "configprovider_table": "/configprovider/table";
-    "configprovider_table_form": "/configprovider/table/form";
-    "configprovider_table_test": "/configprovider/table/test";
-    "configprovider_table_view": "/configprovider/table/view";
     "home": "/home";
     "iframe-page": "/iframe-page/:url";
     "login": "/login/:module(pwd-login|code-login|register|reset-pwd|bind-wechat)?";
@@ -131,7 +124,6 @@ declare module "@elegant-router/types" {
     | "404"
     | "500"
     | "background"
-    | "configprovider"
     | "home"
     | "iframe-page"
     | "login"
@@ -163,12 +155,6 @@ declare module "@elegant-router/types" {
     | "background"
     | "iframe-page"
     | "login"
-    | "configprovider_form-designer"
-    | "configprovider_i18n"
-    | "configprovider_table_form"
-    | "configprovider_table"
-    | "configprovider_table_test"
-    | "configprovider_table_view"
     | "home"
     | "manage_dept"
     | "manage_job"

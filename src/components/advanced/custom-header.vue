@@ -1,13 +1,11 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import type { TableColumnCtx } from 'element-plus';
-import type { TableColumn } from '@/api/globals';
-import { SearchComponent } from '@/api/apiEnumEls';
+import type { TableColumn } from '@/typings/table';
 import { ConditionalType } from '@/api/sqlSugar';
-import type { ComponentApi } from '../types';
 defineOptions({ name: 'CustomHeader', inheritAttrs: false });
 type Props = {
-  column: Partial<TableColumnCtx<any> & TableColumn & { headAttrs?: ComponentApi; checked?: boolean }>;
+  column: Partial<TableColumnCtx<any> & TableColumn>;
 };
 const { column } = defineProps<Props>();
 const searchValue = ref<string>();
@@ -49,14 +47,12 @@ const confirm = () => {
       trigger="click"
     >
       <!-- 动态传入组件 -->
-      <component
-        :is="SearchComponent[column.headAttrs?.component || 'ElInput']"
+      <ElInput
         :ref="`${column?.prop}Ref`"
         v-model="searchValue"
-        :column="column"
         :placeholder="$t('common.placeholder') + $t(column.label as string)"
         v-bind="$attrs"
-      ></component>
+      ></ElInput>
       <!-- confirm 确定框-->
       <div class="flex justify-end">
         <ElButton @click="confirm">清空</ElButton>

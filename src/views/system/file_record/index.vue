@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { computed, onUnmounted, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import type { Sort, TableColumnCtx } from 'element-plus';
 import {
@@ -13,14 +13,15 @@ import {
   ElTableColumn,
   ElTag
 } from 'element-plus';
-import Apis from '@/api';
-import type { FileRecordDTO, TableColumn, TableView } from '@/api/globals';
+import Apis, { alovaInstance } from '@/api';
+import type { FileRecordDTO } from '@/api/globals';
 import type { OrderTypeEnum } from '@/api/apiEnums';
 import { ConditionalType } from '@/api/sqlSugar';
 import downloadExcel from '@/utils/downloadExcel';
 import createComponent from '@/utils/createComponent';
+import type { TableColumn } from '@/typings/table';
 import { $t } from '@/locales';
-import CustomHeader from '@/views/configprovider/table/modules/customHeader.vue';
+import CustomHeader from '@/components/advanced/custom-header.vue';
 import EditForm from './modules/edit-form.vue';
 import { usePagination, useRequest } from '~/packages/alova/src/client';
 
@@ -41,9 +42,7 @@ const defaultColumns: Array<Partial<TableColumnCtx<DataType> & TableColumn>> = [
   { prop: 'filePath', label: '存储路径', checked: false }
 ];
 
-// columns 仅接受后端返回的原始列配置；columnData 为生效列（初始默认列，loadChange 后合并后端列），供列设置管理与表格渲染
-const columns = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([]);
-// 列设置候选：初始为默认列，loadChange 后合并为「后端配置列 + 默认列」
+// columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(defaultColumns);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}
@@ -53,29 +52,16 @@ const searchParams = ref<Record<string, Record<string, string>>>({});
 // 多选行（表格 selection 列联动，供批量删除使用）
 const checkedRowKeys = ref<string[]>([]);
 
-// 表格视图配置加载回调；dataTableConfig 被 deep watch，赋值后触发分页请求
-const loadChange = (table: TableView) => {
-  columns.value = (table?.columns || []) as Array<Partial<TableColumnCtx<DataType> & TableColumn>>;
-
-  // 后端列与默认列按 prop 去重合并进 columnData：后端配置优先，checked 跟随后端 isShow，默认列补充后端未配置的字段
-  const backendProps = new Set(columns.value.map(item => item.prop));
-  columnData.value = [...columns.value, ...defaultColumns.filter(item => !backendProps.has(item.prop as string))];
-
-  if (dataTableConfig.value) dataTableConfig.value.sortList = table?.sorts || {};
-};
-
-// 渲染列：按列设置勾选过滤（全不勾选即空表）；attrs 中的渲染函数展开为 Element Plus 列属性
+// 渲染列：按列设置勾选过滤（全不勾选即空表）
 const tableColumns = computed<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(() => {
   return columnData.value
     .filter(item => item.checked)
     .map(item => {
       return {
         ...item,
-        // eslint-disable-next-line no-eval
-        ...(item.attrs ? eval(`(${item.attrs})`) : {}),
-        className: !item.isExcel ? 'onExcel' : '',
+        className: item.isExcel === false ? 'onExcel' : '',
         prop: item.prop,
-        label: $t(item.label as string),
+        label: item.label as string,
         sortable: 'custom'
       } as Partial<TableColumnCtx<DataType> & TableColumn>;
     });
@@ -128,50 +114,26 @@ const { send: handleDelete, loading: delLoading } = useRequest(
   { force: true, immediate: false }
 );
 
-// 行内缩略图缓存：记录 id → blob objectURL（仅图片类型按需拉取，翻页返回命中缓存不重复拉取）
-const previewSrcMap = ref<Record<string, string>>({});
+// 后端真实地址 origin：必须取原始 env 值——createServiceConfig 在 dev 代理模式下返回代理前缀（/proxy-default，相对路径），
+// new URL 后会落到管理端自身端口，而 /api 未配置代理导致图片 404；同源部署（baseURL 为相对路径）时回退站点 origin
+const backendOrigin = new URL(import.meta.env.VITE_SERVICE_BASE_URL || window.location.origin, window.location.origin)
+  .origin;
 
-/** 复制记录 id 到剪贴板 */
-const handleCopyId = async (id: string) => {
-  await navigator.clipboard.writeText(id);
-  window.$message?.success('记录 Id 已复制');
+/** 图片查看地址：Read 接口返回文件流，是系统内查看图片的统一入口（AllowAnonymous，可直接内联打开） */
+const getImagePath = (id: string) => `${backendOrigin}/api/FileRecord/Read/${id}`;
+
+/** 复制完整图片路径到剪贴板 */
+const handleCopyPath = async (path: string) => {
+  await navigator.clipboard.writeText(path);
+  window.$message?.success('图片路径已复制');
 };
 
 const isImage = (row: DataType) => row.contentType?.startsWith('image/');
 
-/** 拉取行内图片缩略图 */
-const { send: fetchPreviewSrc } = useRequest(
-  (row: DataType) =>
-    Apis.FileRecord.Read({
-      params: { id: row.id },
-      responseType: 'blob',
-      transform: res => {
-        previewSrcMap.value[row.id] = URL.createObjectURL(res as unknown as Blob);
-        return res;
-      }
-    }),
-  { force: true, immediate: false }
-);
-
-// 分页数据变化后，为图片类型行补拉缩略图
-watch(data, list => {
-  list.forEach(row => {
-    if (isImage(row) && !previewSrcMap.value[row.id]) {
-      fetchPreviewSrc(row);
-    }
-  });
-});
-
-// 卸载时释放全部缩略图 blob URL
-onUnmounted(() => {
-  Object.values(previewSrcMap.value).forEach(url => URL.revokeObjectURL(url));
-});
-
-/** 下载：带 token 拉取文件流，以原文件名落盘 */
+/** 下载：拉取文件流，以原文件名落盘（Read 已从 swagger 隐藏，走 alova 实例直连，不经生成 API 层） */
 const { send: handleDownload, loading: downloadLoading } = useRequest(
   (row: DataType) =>
-    Apis.FileRecord.Read({
-      params: { id: row.id },
+    alovaInstance.Get(`/api/FileRecord/Read/${row.id}`, {
       responseType: 'blob',
       transform: res => {
         const blob = res as unknown as Blob;
@@ -233,7 +195,6 @@ const openUpload = async () => {
               </template>
               上传
             </ElButton>
-            <TableViewSetting tableof="FileRecordDTO" router="" config-id="" @load-change="loadChange" />
             <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDelete(checkedRowKeys)">
               <template #reference>
                 <ElButton type="danger" plain :disabled="checkedRowKeys.length === 0">
@@ -284,31 +245,30 @@ const openUpload = async () => {
             @selection-change="(val: Array<DataType>) => (checkedRowKeys = val.map(row => row.id))"
           >
             <ElTableColumn type="selection" width="48" />
-            <!-- 图片行内缩略图：blob 懒加载，点击放大查看；非图片行显示占位 -->
+            <!-- 图片行内缩略图：img 直指 Read 地址（AllowAnonymous 浏览器自行加载），点击放大查看；非图片行显示占位 -->
             <ElTableColumn prop="preview" label="预览" align="center" width="80">
               <template #default="{ row }">
                 <ElImage
-                  v-if="previewSrcMap[row.id]"
-                  :src="previewSrcMap[row.id]"
+                  v-if="isImage(row)"
+                  :src="getImagePath(row.id)"
                   fit="cover"
                   class="h-40px w-40px rounded-4px"
-                  :preview-src-list="[previewSrcMap[row.id]]"
+                  :preview-src-list="[getImagePath(row.id)]"
                   preview-teleported
                   hide-on-click-modal
                 />
-                <icon-mdi-loading v-else-if="isImage(row)" class="animate-spin text-icon" />
                 <span v-else>—</span>
               </template>
             </ElTableColumn>
-            <!-- 记录 Id：点击复制到剪贴板 -->
-            <ElTableColumn prop="id" label="Id" width="180" show-overflow-tooltip>
+            <!-- 图片查看地址：Read 接口 URL，点击复制 -->
+            <ElTableColumn prop="filePath" label="图片路径" width="220" show-overflow-tooltip>
               <template #default="{ row }">
                 <span
                   class="cursor-pointer color-primary hover:opacity-80"
-                  title="点击复制"
-                  @click="handleCopyId(row.id)"
+                  title="点击复制图片路径"
+                  @click="handleCopyPath(getImagePath(row.id))"
                 >
-                  {{ row.id }}
+                  {{ getImagePath(row.id) }}
                 </span>
               </template>
             </ElTableColumn>

@@ -5,7 +5,6 @@ import { useAppStore } from './store/modules/app';
 import { useThemeStore } from './store/modules/theme';
 import { useAuthStore } from './store/modules/auth';
 import { UILocales } from './locales/ui';
-// import customRender from '@/views/configprovider/table/modules/customRender';
 
 defineOptions({ name: 'App' });
 
