@@ -27,10 +27,10 @@ const activeName = ref(VersionEnum.Pc);
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'group', label: '分组', searchType: ConditionalType.Like, checked: true },
-  { prop: 'url', label: '路径', searchType: ConditionalType.Like, checked: true },
-  { prop: 'method', label: '请求方式', searchType: ConditionalType.Equal, checked: true },
-  { prop: 'description', label: '描述', searchType: ConditionalType.Like, checked: true }
+  { prop: 'group', label: '分组', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'url', label: '路径', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'method', label: '请求方式', searchType: String(ConditionalType.Equal), checked: true },
+  { prop: 'description', label: '描述', searchType: String(ConditionalType.Like), checked: true }
 ]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}
@@ -70,10 +70,7 @@ const {
         PageIndex: upPageIndex,
         PageSize: upPageSize,
         SortList: dataTableConfig.value.sortList,
-        Search: {
-          ...searchParams.value,
-          version: { key: 'version', searchType: ConditionalType.Equal, value: String(activeName.value) }
-        }
+        Search: searchParams.value
       }
     }),
   {
@@ -103,7 +100,7 @@ const { send: refreshApis, loading: refreshLoading } = useRequest(
 );
 
 const tabschange = () => {
-  // 版本 Tab 切换后回到第一页拉取：version 已并入请求闭包，切换即取最新值
+  // 版本 Tab 切换后回到第一页拉取（version 过滤为自定义搜索，暂未接入请求）
   if (page.value === 1) {
     reload();
   } else {

@@ -26,7 +26,7 @@ const confirm = () => {
     searchParams.value[column.prop as string] = {
       key: column.prop as string,
       value: searchValue.value as unknown as string,
-      searchType: column.searchType as unknown as string
+      searchType: column.searchType as string
     };
   } else {
     // 删除
@@ -42,7 +42,7 @@ const confirm = () => {
     <ElPopover
       v-if="column.prop"
       placement="bottom"
-      :title="'查询条件：' + $t(`sqlSugar.${ConditionalType[column.searchType as ConditionalType]}`)"
+      :title="'查询条件：' + $t(`sqlSugar.${ConditionalType[Number(column.searchType) as ConditionalType]}`)"
       width="300"
       trigger="click"
     >

@@ -24,8 +24,8 @@ type DataType = QuartzNetDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'taskName', label: '任务名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'taskGroup', label: '任务分组', searchType: ConditionalType.Like, checked: true },
+  { prop: 'taskName', label: '任务名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'taskGroup', label: '任务分组', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'cron', label: 'Cron表达式', checked: true },
   {
     prop: 'triggerType',

@@ -24,7 +24,7 @@ type DataType = SettingDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'name', label: '名称', searchType: ConditionalType.Like, checked: true },
+  { prop: 'name', label: '名称', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'value', label: '值', checked: true },
   {
     prop: 'enabled',

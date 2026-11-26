@@ -25,8 +25,8 @@ type DataType = TenantDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'tenantId', label: '租户Id', searchType: ConditionalType.Equal, checked: true },
-  { prop: 'name', label: '名称', searchType: ConditionalType.Like, checked: true },
+  { prop: 'tenantId', label: '租户Id', searchType: String(ConditionalType.Equal), checked: true },
+  { prop: 'name', label: '名称', searchType: String(ConditionalType.Like), checked: true },
   {
     prop: 'tenantType',
     label: '租户类型',
@@ -48,7 +48,7 @@ const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
     )
   },
   { prop: 'configId', label: '库Id', checked: true },
-  { prop: 'description', label: '描述', searchType: ConditionalType.Like, checked: true },
+  { prop: 'description', label: '描述', searchType: String(ConditionalType.Like), checked: true },
   // 连接串属敏感长文本，默认不展示，可在列设置开启
   { prop: 'connectionString', label: '数据库连接', checked: false }
 ]);

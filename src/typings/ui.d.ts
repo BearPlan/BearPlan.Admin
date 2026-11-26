@@ -18,7 +18,7 @@ declare namespace UI {
     [key: string]: {
       key: string;
       value: string;
-      searchType?: import('@/api/sqlSugar').ConditionalType;
+      searchType?: string;
     };
   };
   type DataTableConfig = {

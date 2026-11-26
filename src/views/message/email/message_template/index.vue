@@ -22,9 +22,9 @@ type DataType = EmailMessageTemplateDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'name', label: '名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'subject', label: '主题', searchType: ConditionalType.Like, checked: true },
-  { prop: 'bccEmailAddresses', label: '密送地址', searchType: ConditionalType.Like, checked: true },
+  { prop: 'name', label: '名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'subject', label: '主题', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'bccEmailAddresses', label: '密送地址', searchType: String(ConditionalType.Like), checked: true },
   {
     prop: 'enabled',
     label: '启用状态',

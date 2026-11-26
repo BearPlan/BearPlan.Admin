@@ -22,11 +22,11 @@ type DataType = QueuedEmailDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'from', label: '发件邮箱', searchType: ConditionalType.Like, checked: true },
-  { prop: 'fromName', label: '发件人名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'to', label: '收件邮箱', searchType: ConditionalType.Like, checked: true },
-  { prop: 'toName', label: '收件人名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'subject', label: '标题', searchType: ConditionalType.Like, checked: true },
+  { prop: 'from', label: '发件邮箱', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'fromName', label: '发件人名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'to', label: '收件邮箱', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'toName', label: '收件人名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'subject', label: '标题', searchType: String(ConditionalType.Like), checked: true },
   {
     prop: 'priority',
     label: '优先级',
@@ -38,7 +38,7 @@ const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
       </ElTag>
     )
   },
-  { prop: 'sentTries', label: '发送上限次数', searchType: ConditionalType.Equal, checked: true },
+  { prop: 'sentTries', label: '发送上限次数', searchType: String(ConditionalType.Equal), checked: true },
   {
     prop: 'isSend',
     label: '是否已发送',

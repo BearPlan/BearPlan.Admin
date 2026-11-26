@@ -21,8 +21,8 @@ type DataType = DeptTreeDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'name', label: '部门名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'sort', label: '排序', searchType: ConditionalType.Equal, checked: true },
+  { prop: 'name', label: '部门名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'sort', label: '排序', searchType: String(ConditionalType.Equal), checked: true },
   {
     prop: 'enabled',
     label: '启用状态',

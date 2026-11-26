@@ -24,8 +24,8 @@ type DataType = SmsDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'phone', label: '手机号', searchType: ConditionalType.Like, checked: true },
-  { prop: 'templateId', label: '模板编号', searchType: ConditionalType.Like, checked: true },
+  { prop: 'phone', label: '手机号', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'templateId', label: '模板编号', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'smsOperator', label: '服务商', checked: true },
   { prop: 'content', label: '短信内容', checked: true },
   {

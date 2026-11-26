@@ -61,10 +61,10 @@ type DataType = UserDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'userName', label: '用户名', searchType: ConditionalType.Like, checked: true },
-  { prop: 'nickName', label: '昵称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'phone', label: '手机号', searchType: ConditionalType.Like, checked: true },
-  { prop: 'email', label: '邮箱', searchType: ConditionalType.Like, checked: true }
+  { prop: 'userName', label: '用户名', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'nickName', label: '昵称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'phone', label: '手机号', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'email', label: '邮箱', searchType: String(ConditionalType.Like), checked: true }
 ]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}

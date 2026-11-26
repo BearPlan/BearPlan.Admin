@@ -33,8 +33,8 @@ type DataType = FileRecordDTO;
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 // newName/filePath 为技术字段，默认不勾选，需要时在列设置中开启
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'originalName', label: '文件原名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'description', label: '文件描述', searchType: ConditionalType.Like, checked: true },
+  { prop: 'originalName', label: '文件原名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'description', label: '文件描述', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'contentTypeName', label: '文件类别', checked: true },
   { prop: 'size', label: '文件大小', checked: true },
   { prop: 'contentType', label: '文件类型', checked: false },

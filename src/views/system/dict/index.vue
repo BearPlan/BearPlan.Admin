@@ -35,8 +35,8 @@ const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
       </ElTag>
     )
   },
-  { prop: 'name', label: '名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'description', label: '描述', searchType: ConditionalType.Like, checked: true }
+  { prop: 'name', label: '名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'description', label: '描述', searchType: String(ConditionalType.Like), checked: true }
 ]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}

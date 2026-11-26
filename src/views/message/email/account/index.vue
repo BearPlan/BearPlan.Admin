@@ -24,11 +24,11 @@ type DataType = EmailAccountDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'email', label: '邮箱地址', searchType: ConditionalType.Like, checked: true },
-  { prop: 'displayName', label: '显示名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'host', label: 'SMTP 主机', searchType: ConditionalType.Like, checked: true },
-  { prop: 'port', label: '端口', searchType: ConditionalType.Equal, checked: true },
-  { prop: 'userName', label: '用户名', searchType: ConditionalType.Like, checked: true },
+  { prop: 'email', label: '邮箱地址', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'displayName', label: '显示名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'host', label: 'SMTP 主机', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'port', label: '端口', searchType: String(ConditionalType.Equal), checked: true },
+  { prop: 'userName', label: '用户名', searchType: String(ConditionalType.Like), checked: true },
   {
     prop: 'enableSsl',
     label: '启用 SSL',

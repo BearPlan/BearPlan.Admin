@@ -33,8 +33,8 @@ const dataScopeMap: Record<DataScopeType, string> = {
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'name', label: '角色名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'level', label: '级别', searchType: ConditionalType.Equal, checked: true },
+  { prop: 'name', label: '角色名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'level', label: '级别', searchType: String(ConditionalType.Equal), checked: true },
   {
     prop: 'dataScopeType',
     label: '数据范围',
@@ -42,7 +42,7 @@ const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
     // 枚举列不做表头搜索（无下拉选项支撑），formatter 渲染为本地映射文本
     formatter: row => dataScopeMap[row.dataScopeType]
   },
-  { prop: 'description', label: '描述', searchType: ConditionalType.Like, checked: true }
+  { prop: 'description', label: '描述', searchType: String(ConditionalType.Like), checked: true }
 ]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}

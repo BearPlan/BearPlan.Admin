@@ -24,7 +24,7 @@ type DataType = TokenBlacklistDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'accessToken', label: '访问令牌', searchType: ConditionalType.Like, checked: true }
+  { prop: 'accessToken', label: '访问令牌', searchType: String(ConditionalType.Like), checked: true }
 ]);
 const dataTableConfig = ref<UI.DataTableConfig>({
   sortList: {}

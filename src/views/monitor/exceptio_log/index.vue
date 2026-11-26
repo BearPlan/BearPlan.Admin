@@ -22,12 +22,12 @@ type DataType = ExceptionLogDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'controller', label: '控制器', searchType: ConditionalType.Like, checked: true },
-  { prop: 'action', label: '方法', searchType: ConditionalType.Like, checked: true },
-  { prop: 'exceptionMessage', label: '异常信息', searchType: ConditionalType.Like, checked: true },
-  { prop: 'description', label: '描述', searchType: ConditionalType.Like, checked: true },
+  { prop: 'controller', label: '控制器', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'action', label: '方法', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'exceptionMessage', label: '异常信息', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'description', label: '描述', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'logLevel', label: '日志级别', checked: true },
-  { prop: 'requestIp', label: '请求IP', searchType: ConditionalType.Like, checked: true },
+  { prop: 'requestIp', label: '请求IP', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'createTime', label: '创建时间', checked: true }
 ]);
 const dataTableConfig = ref<UI.DataTableConfig>({ sortList: {} });

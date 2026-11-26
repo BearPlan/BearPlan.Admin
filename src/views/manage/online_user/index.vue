@@ -22,11 +22,11 @@ type DataType = OnlineUserDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'userName', label: '登录账号', searchType: ConditionalType.Like, checked: true },
-  { prop: 'nickName', label: '昵称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'deptName', label: '部门', searchType: ConditionalType.Like, checked: true },
-  { prop: 'ip', label: '登录IP', searchType: ConditionalType.Like, checked: true },
-  { prop: 'address', label: 'IP归属地', searchType: ConditionalType.Like, checked: true },
+  { prop: 'userName', label: '登录账号', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'nickName', label: '昵称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'deptName', label: '部门', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'ip', label: '登录IP', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'address', label: 'IP归属地', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'browserName', label: '浏览器', checked: true },
   { prop: 'apiVersion', label: '客户端类型', checked: true },
   { prop: 'deviceId', label: '设备ID', checked: true },

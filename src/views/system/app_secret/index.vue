@@ -24,8 +24,8 @@ type DataType = AppSecretDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
-  { prop: 'appName', label: '应用名称', searchType: ConditionalType.Like, checked: true },
-  { prop: 'appId', label: '应用ID', searchType: ConditionalType.Like, checked: true },
+  { prop: 'appName', label: '应用名称', searchType: String(ConditionalType.Like), checked: true },
+  { prop: 'appId', label: '应用ID', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'appSecretKey', label: '应用秘钥', checked: true },
   { prop: 'remark', label: '备注', checked: true }
 ]);
