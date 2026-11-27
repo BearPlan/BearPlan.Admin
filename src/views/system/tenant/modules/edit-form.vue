@@ -22,6 +22,11 @@ const { formRef, validate, restoreValidation } = useCommonForm();
 // 规则验证获取对象
 const { defaultRequiredRule } = useFormRules();
 
+interface Emits {
+  (e: 'reload', row: any): any;
+}
+const emit = defineEmits<Emits>();
+
 /** 提交详情 */
 const {
   send: handleSubmit,
@@ -44,7 +49,7 @@ const {
     resetAfterSubmiting: true,
     // 只维护业务字段；审计字段（createId/createTime 等）由 GetInfo 回填后随表单提交
     initialForm: {
-      id: null,
+      id: 0,
       tenantId: null,
       name: '',
       tenantType: 1,
@@ -53,12 +58,10 @@ const {
       dbType: null,
       connectionString: ''
     } as unknown as FormType,
-    async middleware(ctx, next) {
-      // 校验通过才发起提交，完成后复位按钮 loading
-      validate().then(async () => {
-        await next();
-        ctx.proxyStates.loading.v = false;
-      });
+    async middleware(_, next) {
+      // 校验通过才发起提交；promise 链必须 await 透传给 alova，请求无论成败它都会自动复位 loading
+      await validate();
+      await next();
     }
   }
 );
@@ -111,60 +114,53 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-700px">
-    <ElScrollbar class="h-300px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
-        <ElFormItem label="租户Id" prop="tenantId">
-          <ElInputNumber v-model="formData.tenantId" :min="1" :controls="false" class="!w-full" />
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px" @close="closeForm">
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
+      <ElFormItem label="租户Id" prop="tenantId">
+        <ElInputNumber v-model="formData.tenantId" :min="1" :controls="false" class="!w-full" />
+      </ElFormItem>
+
+      <ElFormItem label="名称" prop="name">
+        <ElInput v-model="formData.name" :placeholder="$t('common.placeholder') + '名称'" />
+      </ElFormItem>
+
+      <ElFormItem label="租户类型" prop="tenantType">
+        <ElRadioGroup v-model="formData.tenantType">
+          <ElRadio :value="1" label="Id隔离" />
+          <ElRadio :value="2" label="库隔离" />
+        </ElRadioGroup>
+      </ElFormItem>
+
+      <template v-if="formData.tenantType === 2">
+        <ElFormItem label="库Id" prop="configId">
+          <ElInput v-model="formData.configId" :placeholder="$t('common.placeholder') + '库Id'" />
         </ElFormItem>
 
-        <ElFormItem label="名称" prop="name">
-          <ElInput v-model="formData.name" :placeholder="$t('common.placeholder') + '名称'" />
+        <ElFormItem label="数据库类型" prop="dbType">
+          <ElSelect v-model="formData.dbType" class="w-full">
+            <ElOption v-for="option in dbTypeOptions" :key="option.value" :value="option.value" :label="option.label" />
+          </ElSelect>
         </ElFormItem>
 
-        <ElFormItem label="租户类型" prop="tenantType">
-          <ElRadioGroup v-model="formData.tenantType">
-            <ElRadio :value="1" label="Id隔离" />
-            <ElRadio :value="2" label="库隔离" />
-          </ElRadioGroup>
-        </ElFormItem>
-
-        <template v-if="formData.tenantType === 2">
-          <ElFormItem label="库Id" prop="configId">
-            <ElInput v-model="formData.configId" :placeholder="$t('common.placeholder') + '库Id'" />
-          </ElFormItem>
-
-          <ElFormItem label="数据库类型" prop="dbType">
-            <ElSelect v-model="formData.dbType" class="w-full">
-              <ElOption
-                v-for="option in dbTypeOptions"
-                :key="option.value"
-                :value="option.value"
-                :label="option.label"
-              />
-            </ElSelect>
-          </ElFormItem>
-
-          <ElFormItem label="数据库连接" prop="connectionString">
-            <ElInput
-              v-model="formData.connectionString"
-              type="textarea"
-              :rows="3"
-              :placeholder="$t('common.placeholder') + '数据库连接串'"
-            />
-          </ElFormItem>
-        </template>
-
-        <ElFormItem label="描述" prop="description">
+        <ElFormItem label="数据库连接" prop="connectionString">
           <ElInput
-            v-model="formData.description"
+            v-model="formData.connectionString"
             type="textarea"
             :rows="3"
-            :placeholder="$t('common.placeholder') + '描述'"
+            :placeholder="$t('common.placeholder') + '数据库连接串'"
           />
         </ElFormItem>
-      </ElForm>
-    </ElScrollbar>
+      </template>
+
+      <ElFormItem label="描述" prop="description">
+        <ElInput
+          v-model="formData.description"
+          type="textarea"
+          :rows="3"
+          :placeholder="$t('common.placeholder') + '描述'"
+        />
+      </ElFormItem>
+    </ElForm>
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.close') }}</ElButton>

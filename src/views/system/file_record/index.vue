@@ -19,6 +19,7 @@ import type { OrderTypeEnum } from '@/api/apiEnums';
 import { ConditionalType } from '@/api/sqlSugar';
 import downloadExcel from '@/utils/downloadExcel';
 import createComponent from '@/utils/createComponent';
+import { getReadFilePath } from '@/utils/file';
 import type { TableColumn } from '@/typings/table';
 import { $t } from '@/locales';
 import CustomHeader from '@/components/advanced/custom-header.vue';
@@ -111,13 +112,8 @@ const { send: handleDelete, loading: delLoading } = useRequest(
   { force: true, immediate: false }
 );
 
-// 后端真实地址 origin：必须取原始 env 值——createServiceConfig 在 dev 代理模式下返回代理前缀（/proxy-default，相对路径），
-// new URL 后会落到管理端自身端口，而 /api 未配置代理导致图片 404；同源部署（baseURL 为相对路径）时回退站点 origin
-const backendOrigin = new URL(import.meta.env.VITE_SERVICE_BASE_URL || window.location.origin, window.location.origin)
-  .origin;
-
-/** 图片查看地址：Read 接口返回文件流，是系统内查看图片的统一入口（AllowAnonymous，可直接内联打开） */
-const getImagePath = (id: string) => `${backendOrigin}/api/FileRecord/Read/${id}`;
+// Read 流地址走共享工具（内部处理后端 origin：dev 代理与同源部署均可直连）
+const getImagePath = (id: string) => getReadFilePath(id);
 
 /** 复制完整图片路径到剪贴板 */
 const handleCopyPath = async (path: string) => {
@@ -186,7 +182,7 @@ const openUpload = async () => {
         <div class="flex items-center justify-between">
           <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
           <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
-            <ElButton type="primary" @click="openUpload()">
+            <ElButton size="small" type="primary" @click="openUpload()">
               <template #icon>
                 <icon-mdi-upload class="text-icon" />
               </template>
@@ -194,7 +190,7 @@ const openUpload = async () => {
             </ElButton>
             <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDelete(checkedRowKeys)">
               <template #reference>
-                <ElButton type="danger" plain :disabled="checkedRowKeys.length === 0">
+                <ElButton size="small" type="danger" plain :disabled="checkedRowKeys.length === 0">
                   <template #icon>
                     <icon-ic-round-delete class="text-icon" />
                   </template>
@@ -202,13 +198,13 @@ const openUpload = async () => {
                 </ElButton>
               </template>
             </ElPopconfirm>
-            <ElButton ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
+            <ElButton size="small" ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
               <template #icon>
                 <icon-charm:download class="text-icon" />
               </template>
               {{ $t('导出') }}
             </ElButton>
-            <ElButton @click="reload">
+            <ElButton size="small" @click="reload">
               <template #icon>
                 <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': loading }" />
               </template>
@@ -257,7 +253,7 @@ const openUpload = async () => {
                 <span v-else>—</span>
               </template>
             </ElTableColumn>
-            <!-- 图片查看地址：Read 接口 URL，点击复制 -->
+            <!-- 图片查看地址：列内显示短路径，点击复制完整 URL -->
             <ElTableColumn prop="filePath" label="图片路径" width="220" show-overflow-tooltip>
               <template #default="{ row }">
                 <span

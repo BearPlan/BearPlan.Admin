@@ -52,18 +52,16 @@ const {
     immediate: false,
     resetAfterSubmiting: true,
     initialForm: {
-      id: null,
+      id: 0,
       appId: '',
       appSecretKey: '',
       appName: '',
       remark: ''
     } as unknown as FormType,
-    async middleware(ctx, next) {
-      // 校验通过才发起提交，完成后复位按钮 loading
-      validate().then(async () => {
-        await next();
-        ctx.proxyStates.loading.v = false;
-      });
+    async middleware(_, next) {
+      // 校验通过才发起提交；promise 链必须 await 透传给 alova，请求无论成败它都会自动复位 loading
+      await validate();
+      await next();
     }
   }
 );
@@ -97,6 +95,11 @@ const closeForm = () => {
   resetFrom();
 };
 
+/** 生成随机 UUID 填入指定字段 */
+const generateUuid = (key: 'appId' | 'appSecretKey') => {
+  formData.value[key] = crypto.randomUUID();
+};
+
 defineExpose({
   openForm
 });
@@ -104,26 +107,37 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-900px">
-    <ElScrollbar class="h-480px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
-        <ElFormItem label="应用名称" prop="appName">
-          <ElInput v-model="formData.appName" :placeholder="$t('common.placeholder') + '应用名称'" />
-        </ElFormItem>
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px" @close="closeForm">
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
+      <ElFormItem label="应用名称" prop="appName">
+        <ElInput v-model="formData.appName" :placeholder="$t('common.placeholder') + '应用名称'" />
+      </ElFormItem>
 
-        <ElFormItem label="应用ID" prop="appId">
-          <ElInput v-model="formData.appId" :placeholder="$t('common.placeholder') + '应用ID'" />
-        </ElFormItem>
+      <ElFormItem label="应用ID" prop="appId">
+        <ElInput v-model="formData.appId" :placeholder="$t('common.placeholder') + '应用ID'">
+          <template #append>
+            <ElButton @click="generateUuid('appId')">生成</ElButton>
+          </template>
+        </ElInput>
+      </ElFormItem>
 
-        <ElFormItem label="应用秘钥" prop="appSecretKey">
-          <ElInput v-model="formData.appSecretKey" :placeholder="$t('common.placeholder') + '应用秘钥'" />
-        </ElFormItem>
+      <ElFormItem label="应用秘钥" prop="appSecretKey">
+        <ElInput v-model="formData.appSecretKey" :placeholder="$t('common.placeholder') + '应用秘钥'">
+          <template #append>
+            <ElButton @click="generateUuid('appSecretKey')">生成</ElButton>
+          </template>
+        </ElInput>
+      </ElFormItem>
 
-        <ElFormItem label="备注" prop="remark">
-          <ElInput v-model="formData.remark" type="textarea" :rows="3" :placeholder="$t('common.placeholder') + '备注'" />
-        </ElFormItem>
-      </ElForm>
-    </ElScrollbar>
+      <ElFormItem label="备注" prop="remark">
+        <ElInput
+          v-model="formData.remark"
+          type="textarea"
+          :rows="3"
+          :placeholder="$t('common.placeholder') + '备注'"
+        />
+      </ElFormItem>
+    </ElForm>
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.close') }}</ElButton>

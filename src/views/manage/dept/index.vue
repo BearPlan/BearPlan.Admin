@@ -150,7 +150,7 @@ const openForm = async (id: string | null) => {
         <div class="flex items-center justify-between">
           <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
           <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
-            <ElButton ghost type="primary" @click="openForm(null)">
+            <ElButton size="small" ghost type="primary" @click="openForm(null)">
               <template #icon>
                 <icon-ic-round-plus class="text-icon" />
               </template>
@@ -158,7 +158,7 @@ const openForm = async (id: string | null) => {
             </ElButton>
             <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDelete(checkedRowKeys)">
               <template #reference>
-                <ElButton type="danger" plain :disabled="checkedRowKeys.length === 0">
+                <ElButton size="small" type="danger" plain :disabled="checkedRowKeys.length === 0">
                   <template #icon>
                     <icon-ic-round-delete class="text-icon" />
                   </template>
@@ -166,13 +166,13 @@ const openForm = async (id: string | null) => {
                 </ElButton>
               </template>
             </ElPopconfirm>
-            <ElButton ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
+            <ElButton size="small" ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
               <template #icon>
                 <icon-charm:download class="text-icon" />
               </template>
               {{ $t('导出') }}
             </ElButton>
-            <ElButton @click="getData">
+            <ElButton size="small" @click="getData">
               <template #icon>
                 <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': loading }" />
               </template>

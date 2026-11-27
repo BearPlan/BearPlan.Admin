@@ -59,18 +59,16 @@ const {
     immediate: false,
     resetAfterSubmiting: true,
     initialForm: {
-      id: null,
+      id: 0,
       parentId: '0', // 新增默认顶级部门，后端按 parentId != 0 重算父节点子计数
       name: '',
       sort: 0,
       enabled: true
     } as unknown as FormType,
-    async middleware(ctx, next) {
-      // 校验通过才发起提交，完成后复位按钮 loading
-      validate().then(async () => {
-        await next();
-        ctx.proxyStates.loading.v = false;
-      });
+    async middleware(_, next) {
+      // 校验通过才发起提交；promise 链必须 await 透传给 alova，请求无论成败它都会自动复位 loading
+      await validate();
+      await next();
     }
   }
 );
@@ -125,39 +123,37 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-900px">
-    <ElScrollbar class="h-480px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
-        <ElFormItem label="上级部门" prop="parentId">
-          <ElTreeSelect
-            v-model="formData.parentId"
-            class="w-full"
-            node-key="id"
-            :data="parentOptions"
-            :props="{ label: 'name', children: 'children' }"
-            check-strictly
-            default-expand-all
-            :render-after-expand="false"
-            :placeholder="$t('common.placeholder') + '上级部门'"
-          />
-        </ElFormItem>
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px" @close="closeForm">
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
+      <ElFormItem label="上级部门" prop="parentId">
+        <ElTreeSelect
+          v-model="formData.parentId"
+          class="w-full"
+          node-key="id"
+          :data="parentOptions"
+          :props="{ label: 'name', children: 'children' }"
+          check-strictly
+          default-expand-all
+          :render-after-expand="false"
+          :placeholder="$t('common.placeholder') + '上级部门'"
+        />
+      </ElFormItem>
 
-        <ElFormItem label="部门名称" prop="name">
-          <ElInput v-model="formData.name" :placeholder="$t('common.placeholder') + '部门名称'" />
-        </ElFormItem>
+      <ElFormItem label="部门名称" prop="name">
+        <ElInput v-model="formData.name" :placeholder="$t('common.placeholder') + '部门名称'" />
+      </ElFormItem>
 
-        <ElFormItem label="排序" prop="sort">
-          <ElInputNumber v-model="formData.sort" class="w-full" :placeholder="$t('common.placeholder') + '排序'" />
-        </ElFormItem>
+      <ElFormItem label="排序" prop="sort">
+        <ElInputNumber v-model="formData.sort" class="w-full" :placeholder="$t('common.placeholder') + '排序'" />
+      </ElFormItem>
 
-        <ElFormItem label="启用状态" prop="enabled">
-          <ElRadioGroup v-model="formData.enabled">
-            <ElRadio :value="true" label="启用" />
-            <ElRadio :value="false" label="禁用" />
-          </ElRadioGroup>
-        </ElFormItem>
-      </ElForm>
-    </ElScrollbar>
+      <ElFormItem label="启用状态" prop="enabled">
+        <ElRadioGroup v-model="formData.enabled">
+          <ElRadio :value="true" label="启用" />
+          <ElRadio :value="false" label="禁用" />
+        </ElRadioGroup>
+      </ElFormItem>
+    </ElForm>
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.close') }}</ElButton>

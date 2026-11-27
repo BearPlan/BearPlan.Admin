@@ -1,22 +1,24 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { VNode } from 'vue';
 import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
 import { useSvgIcon } from '@/hooks/common/icon';
 import { $t } from '@/locales';
+import UserCenter from '@/components/common/user-center.vue';
+import EditPwd from '@/views/manage/user/modules/edit-pwd.vue';
 
 defineOptions({ name: 'UserAvatar' });
 
 const authStore = useAuthStore();
-const { routerPushByKey, toLogin } = useRouterPush();
+const { toLogin } = useRouterPush();
 const { SvgIconVNode } = useSvgIcon();
 
 function loginOrRegister() {
   toLogin();
 }
 
-type DropdownKey = 'user-center' | 'logout';
+type DropdownKey = 'user-center' | 'update-pwd' | 'logout';
 
 type DropdownOption = {
   key: DropdownKey;
@@ -32,6 +34,11 @@ const options = computed(() => {
       icon: SvgIconVNode({ icon: 'ph:user-circle', fontSize: 18 })
     },
     {
+      label: '修改密码',
+      key: 'update-pwd',
+      icon: SvgIconVNode({ icon: 'ph:key', fontSize: 18 })
+    },
+    {
       label: $t('common.logout'),
       key: 'logout',
       icon: SvgIconVNode({ icon: 'ph:sign-out', fontSize: 18 })
@@ -40,6 +47,10 @@ const options = computed(() => {
 
   return opts;
 });
+
+// 个人中心与修改密码弹窗（edit-pwd 不传 id 为本人模式，需原密码）
+const userCenterRef = ref<InstanceType<typeof UserCenter>>();
+const editPwdRef = ref<InstanceType<typeof EditPwd>>();
 
 function logout() {
   window.$messageBox
@@ -56,9 +67,10 @@ function logout() {
 function handleDropdown(key: DropdownKey) {
   if (key === 'logout') {
     logout();
+  } else if (key === 'update-pwd') {
+    editPwdRef.value?.openForm();
   } else {
-    // If your other options are jumps from other routes, they will be directly supported here
-    routerPushByKey(key);
+    userCenterRef.value?.open();
   }
 }
 </script>
@@ -84,9 +96,12 @@ function handleDropdown(key: DropdownKey) {
     </template>
     <div class="flex items-center">
       <SvgIcon icon="ph:user-circle" class="mr-5px text-icon-large" />
-      <span class="text-16px font-medium">{{ authStore.userInfo.userName }}</span>
+      <span class="text-16px font-medium">{{ authStore.userInfo.user.userName }}</span>
     </div>
   </ElDropdown>
+
+  <UserCenter ref="userCenterRef" />
+  <EditPwd ref="editPwdRef" />
 </template>
 
 <style scoped></style>

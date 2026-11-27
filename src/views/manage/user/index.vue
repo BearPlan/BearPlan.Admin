@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import type { Sort, TableColumnCtx } from 'element-plus';
 import {
+  ElAvatar,
   ElButton,
   ElCard,
   ElCol,
@@ -22,10 +23,12 @@ import type { OrderTypeEnum } from '@/api/apiEnums';
 import { ConditionalType } from '@/api/sqlSugar';
 import downloadExcel from '@/utils/downloadExcel';
 import createComponent from '@/utils/createComponent';
+import { toBackendUrl } from '@/utils/file';
 import type { TableColumn } from '@/typings/table';
 import { $t } from '@/locales';
 import CustomHeader from '@/components/advanced/custom-header.vue';
 import EditForm from './modules/edit-form.vue';
+import EditPwd from './modules/edit-pwd.vue';
 import { usePagination, useRequest } from '~/packages/alova/src/client';
 
 // 搜索关键词
@@ -61,6 +64,15 @@ type DataType = UserDTO;
 
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
+  {
+    prop: 'avatar',
+    label: '头像',
+    align: 'center',
+    width: 80,
+    sortable: false,
+    checked: true,
+    formatter: row => (row.avatar ? <ElAvatar size={40} src={toBackendUrl(row.avatar)} /> : <span>—</span>)
+  },
   { prop: 'userName', label: '用户名', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'nickName', label: '昵称', searchType: String(ConditionalType.Like), checked: true },
   { prop: 'phone', label: '手机号', searchType: String(ConditionalType.Like), checked: true },
@@ -84,7 +96,7 @@ const tableColumns = computed<Array<Partial<TableColumnCtx<DataType> & TableColu
         className: item.isExcel === false ? 'onExcel' : '',
         prop: item.prop,
         label: item.label as string,
-        sortable: 'custom'
+        sortable: item.sortable ?? 'custom'
       } as Partial<TableColumnCtx<DataType> & TableColumn>;
     });
 });
@@ -162,6 +174,19 @@ const openForm = async (deptId: string | null, id?: string) => {
     reload();
   });
 
+  on('update:visible', res => {
+    if (!res) {
+      unmount();
+    }
+  });
+};
+
+// 打开重置密码弹窗：动态挂载编辑弹窗并传入目标用户 id（管理员模式，无须原密码）
+const openEditPwd = async (id: string) => {
+  const { instance, on, unmount } = await createComponent(EditPwd, {
+    visible: true
+  });
+  instance?.openForm(id);
   on('update:visible', res => {
     if (!res) {
       unmount();
@@ -278,7 +303,7 @@ const collapseAll = () => {
             <div class="flex items-center justify-between">
               <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
               <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
-                <ElButton ghost type="primary" @click="openForm(selectedDeptId)">
+                <ElButton size="small" ghost type="primary" @click="openForm(selectedDeptId)">
                   <template #icon>
                     <icon-ic-round-plus class="text-icon" />
                   </template>
@@ -286,7 +311,7 @@ const collapseAll = () => {
                 </ElButton>
                 <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDelete(checkedRowKeys)">
                   <template #reference>
-                    <ElButton type="danger" plain :disabled="checkedRowKeys.length === 0">
+                    <ElButton size="small" type="danger" plain :disabled="checkedRowKeys.length === 0">
                       <template #icon>
                         <icon-ic-round-delete class="text-icon" />
                       </template>
@@ -294,13 +319,17 @@ const collapseAll = () => {
                     </ElButton>
                   </template>
                 </ElPopconfirm>
-                <ElButton ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
+                <ElButton
+                  size="small"
+                  ghost
+                  @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))"
+                >
                   <template #icon>
                     <icon-charm:download class="text-icon" />
                   </template>
                   {{ $t('导出') }}
                 </ElButton>
-                <ElButton @click="reload">
+                <ElButton size="small" @click="reload">
                   <template #icon>
                     <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': loading }" />
                   </template>
@@ -344,12 +373,13 @@ const collapseAll = () => {
                     <CustomHeader v-model="searchParams" :column="item" />
                   </template>
                 </ElTableColumn>
-                <ElTableColumn prop="use" label="操作" align="center" width="200" fixed="right">
+                <ElTableColumn prop="use" label="操作" align="center" width="260" fixed="right">
                   <template #default="{ row }">
                     <div class="flex-center pr-10px">
                       <ElButton type="primary" plain size="small" @click="openForm(null, row.id)">
                         {{ $t('common.edit') }}
                       </ElButton>
+                      <ElButton type="warning" plain size="small" @click="openEditPwd(row.id)">改密</ElButton>
                       <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDelete([row.id])">
                         <template #reference>
                           <ElButton type="danger" plain size="small">{{ $t('common.delete') }}</ElButton>

@@ -48,7 +48,7 @@ const {
     resetAfterSubmiting: true,
     // 只初始化表单涉及的配置字段；runTimes/startTime/endTime 为运行时统计字段，编辑时由 GetInfo 回填
     initialForm: {
-      id: null,
+      id: 0,
       taskName: '',
       taskGroup: '',
       triggerType: 1,
@@ -64,12 +64,10 @@ const {
       enabled: true,
       description: ''
     } as unknown as FormType,
-    async middleware(ctx, next) {
-      // 校验通过才发起提交，完成后复位按钮 loading
-      validate().then(async () => {
-        await next();
-        ctx.proxyStates.loading.v = false;
-      });
+    async middleware(_, next) {
+      // 校验通过才发起提交；promise 链必须 await 透传给 alova，请求无论成败它都会自动复位 loading
+      await validate();
+      await next();
     }
   }
 );
@@ -138,100 +136,98 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-900px">
-    <ElScrollbar class="h-480px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="110">
-        <ElFormItem label="任务名称" prop="taskName">
-          <ElInput v-model="formData.taskName" :placeholder="$t('common.placeholder') + '任务名称'" />
-        </ElFormItem>
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px" @close="closeForm">
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="110">
+      <ElFormItem label="任务名称" prop="taskName">
+        <ElInput v-model="formData.taskName" :placeholder="$t('common.placeholder') + '任务名称'" />
+      </ElFormItem>
 
-        <ElFormItem label="任务分组" prop="taskGroup">
-          <ElInput v-model="formData.taskGroup" :placeholder="$t('common.placeholder') + '任务分组'" />
-        </ElFormItem>
+      <ElFormItem label="任务分组" prop="taskGroup">
+        <ElInput v-model="formData.taskGroup" :placeholder="$t('common.placeholder') + '任务分组'" />
+      </ElFormItem>
 
-        <ElFormItem label="触发类型" prop="triggerType">
-          <ElRadioGroup v-model="formData.triggerType">
-            <ElRadio :value="1" label="Cron表达式" />
-            <ElRadio :value="2" label="间隔" />
-          </ElRadioGroup>
-        </ElFormItem>
+      <ElFormItem label="触发类型" prop="triggerType">
+        <ElRadioGroup v-model="formData.triggerType">
+          <ElRadio :value="1" label="Cron表达式" />
+          <ElRadio :value="2" label="间隔" />
+        </ElRadioGroup>
+      </ElFormItem>
 
-        <ElFormItem v-if="formData.triggerType === 1" label="Cron表达式" prop="cron">
-          <ElInput v-model="formData.cron" placeholder="0/5 * * * * ?">
-            <!-- 在线生成器:cron.ren 支持可视化解析/反解析 Quartz 表达式 -->
-            <template #append>
-              <ElButton tag="a" href="https://cron.ren/" target="_blank" rel="noopener noreferrer">在线生成</ElButton>
-            </template>
-          </ElInput>
-        </ElFormItem>
+      <ElFormItem v-if="formData.triggerType === 1" label="Cron表达式" prop="cron">
+        <ElInput v-model="formData.cron" placeholder="0/5 * * * * ?">
+          <!-- 在线生成器:cron.ren 支持可视化解析/反解析 Quartz 表达式 -->
+          <template #append>
+            <ElButton tag="a" href="https://cron.ren/" target="_blank" rel="noopener noreferrer">在线生成</ElButton>
+          </template>
+        </ElInput>
+      </ElFormItem>
 
-        <ElFormItem v-if="formData.triggerType === 2" label="间隔秒数" prop="intervalSecond">
-          <ElInputNumber
-            v-model="formData.intervalSecond"
-            class="w-full"
-            :min="1"
-            :placeholder="$t('common.placeholder') + '间隔秒数'"
-          />
-        </ElFormItem>
+      <ElFormItem v-if="formData.triggerType === 2" label="间隔秒数" prop="intervalSecond">
+        <ElInputNumber
+          v-model="formData.intervalSecond"
+          class="w-full"
+          :min="1"
+          :placeholder="$t('common.placeholder') + '间隔秒数'"
+        />
+      </ElFormItem>
 
-        <ElFormItem label="循环次数" prop="cycleRunTimes">
-          <ElInputNumber
-            v-model="formData.cycleRunTimes"
-            class="w-full"
-            :min="0"
-            :placeholder="$t('common.placeholder') + '循环次数（0为不限）'"
-          />
-        </ElFormItem>
+      <ElFormItem label="循环次数" prop="cycleRunTimes">
+        <ElInputNumber
+          v-model="formData.cycleRunTimes"
+          class="w-full"
+          :min="0"
+          :placeholder="$t('common.placeholder') + '循环次数（0为不限）'"
+        />
+      </ElFormItem>
 
-        <ElFormItem label="程序集" prop="assemblyName">
-          <ElInput v-model="formData.assemblyName" :placeholder="$t('common.placeholder') + '程序集名称'" />
-        </ElFormItem>
+      <ElFormItem label="程序集" prop="assemblyName">
+        <ElInput v-model="formData.assemblyName" :placeholder="$t('common.placeholder') + '程序集名称'" />
+      </ElFormItem>
 
-        <ElFormItem label="类型" prop="className">
-          <ElInput v-model="formData.className" :placeholder="$t('common.placeholder') + '类型名称（含命名空间）'" />
-        </ElFormItem>
+      <ElFormItem label="类型" prop="className">
+        <ElInput v-model="formData.className" :placeholder="$t('common.placeholder') + '类型名称（含命名空间）'" />
+      </ElFormItem>
 
-        <ElFormItem label="运行参数" prop="runParams">
-          <ElInput
-            v-model="formData.runParams"
-            type="textarea"
-            :rows="3"
-            :placeholder="$t('common.placeholder') + '运行参数（JSON）'"
-          />
-        </ElFormItem>
+      <ElFormItem label="运行参数" prop="runParams">
+        <ElInput
+          v-model="formData.runParams"
+          type="textarea"
+          :rows="3"
+          :placeholder="$t('common.placeholder') + '运行参数（JSON）'"
+        />
+      </ElFormItem>
 
-        <ElFormItem label="负责人" prop="principal">
-          <ElInput v-model="formData.principal" :placeholder="$t('common.placeholder') + '负责人'" />
-        </ElFormItem>
+      <ElFormItem label="负责人" prop="principal">
+        <ElInput v-model="formData.principal" :placeholder="$t('common.placeholder') + '负责人'" />
+      </ElFormItem>
 
-        <ElFormItem label="报警邮箱" prop="alertEmail">
-          <ElInput v-model="formData.alertEmail" :placeholder="$t('common.placeholder') + '报警邮箱'" />
-        </ElFormItem>
+      <ElFormItem label="报警邮箱" prop="alertEmail">
+        <ElInput v-model="formData.alertEmail" :placeholder="$t('common.placeholder') + '报警邮箱'" />
+      </ElFormItem>
 
-        <ElFormItem label="失败后暂停" prop="pauseAfterFailure">
-          <ElRadioGroup v-model="formData.pauseAfterFailure">
-            <ElRadio :value="true" label="是" />
-            <ElRadio :value="false" label="否" />
-          </ElRadioGroup>
-        </ElFormItem>
+      <ElFormItem label="失败后暂停" prop="pauseAfterFailure">
+        <ElRadioGroup v-model="formData.pauseAfterFailure">
+          <ElRadio :value="true" label="是" />
+          <ElRadio :value="false" label="否" />
+        </ElRadioGroup>
+      </ElFormItem>
 
-        <ElFormItem label="启用状态" prop="enabled">
-          <ElRadioGroup v-model="formData.enabled">
-            <ElRadio :value="true" label="启用" />
-            <ElRadio :value="false" label="禁用" />
-          </ElRadioGroup>
-        </ElFormItem>
+      <ElFormItem label="启用状态" prop="enabled">
+        <ElRadioGroup v-model="formData.enabled">
+          <ElRadio :value="true" label="启用" />
+          <ElRadio :value="false" label="禁用" />
+        </ElRadioGroup>
+      </ElFormItem>
 
-        <ElFormItem label="描述" prop="description">
-          <ElInput
-            v-model="formData.description"
-            type="textarea"
-            :rows="3"
-            :placeholder="$t('common.placeholder') + '描述'"
-          />
-        </ElFormItem>
-      </ElForm>
-    </ElScrollbar>
+      <ElFormItem label="描述" prop="description">
+        <ElInput
+          v-model="formData.description"
+          type="textarea"
+          :rows="3"
+          :placeholder="$t('common.placeholder') + '描述'"
+        />
+      </ElFormItem>
+    </ElForm>
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.close') }}</ElButton>

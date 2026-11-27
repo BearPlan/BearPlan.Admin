@@ -24,6 +24,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   const token = ref(getToken());
 
+  // 仅初始化高频引用字段，完整 UserInfo 登录后经 GetInfo 填充；类型断言经 unknown 中转（部分初始化）
   const userInfo: JwtUserInfo = reactive({
     user: {
       id: '',
@@ -33,8 +34,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       email: ''
     },
     roles: [],
-    dataScopes: []
-  });
+    authCodes: []
+  } as unknown as JwtUserInfo);
 
   /** is super role in static route */
   const isStaticSuper = computed(() => {
@@ -98,7 +99,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       }),
     {
       immediate: false,
-      force: false
+      // 强制拉新：GET 响应有默认缓存，资料/头像修改后刷新必须绕过缓存拿最新值
+      force: true
       // async middleware(_, next) {
       //   if (userInfo.user?.id === 0) {
       //     await next();
@@ -141,11 +143,14 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       }),
     {
       immediate: false,
-      async middleware(ctx, next) {
+      async middleware(_, next) {
+        // 全局 loading 必须在请求无论成败后都关闭，否则登录失败会永久卡住遮罩
         startLoading();
-        await next();
-        endLoading();
-        ctx.proxyStates.loading.v = false;
+        try {
+          await next();
+        } finally {
+          endLoading();
+        }
       }
     }
   );
@@ -264,6 +269,11 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     }
   }
 
+  /** 刷新当前登录用户信息：个人中心修改资料/头像后调用，同步右上角等全局展示 */
+  async function refreshUserInfo() {
+    await getUserInfo();
+  }
+
   return {
     token,
     userInfo,
@@ -272,6 +282,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     loginLoading,
     logout,
     login,
-    initUserInfo
+    initUserInfo,
+    refreshUserInfo
   };
 });

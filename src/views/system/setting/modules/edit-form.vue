@@ -52,18 +52,16 @@ const {
     immediate: false,
     resetAfterSubmiting: true,
     initialForm: {
-      id: null,
+      id: 0,
       name: '',
       value: '',
       enabled: true,
       description: ''
     } as unknown as FormType,
-    async middleware(ctx, next) {
-      // 校验通过才发起提交，完成后复位按钮 loading
-      validate().then(async () => {
-        await next();
-        ctx.proxyStates.loading.v = false;
-      });
+    async middleware(_, next) {
+      // 校验通过才发起提交；promise 链必须 await 透传给 alova，请求无论成败它都会自动复位 loading
+      await validate();
+      await next();
     }
   }
 );
@@ -104,34 +102,32 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-900px">
-    <ElScrollbar class="h-480px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
-        <ElFormItem label="名称" prop="name">
-          <ElInput v-model="formData.name" :placeholder="$t('common.placeholder') + '名称'" />
-        </ElFormItem>
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px" @close="closeForm">
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
+      <ElFormItem label="名称" prop="name">
+        <ElInput v-model="formData.name" :placeholder="$t('common.placeholder') + '名称'" />
+      </ElFormItem>
 
-        <ElFormItem label="值" prop="value">
-          <ElInput v-model="formData.value" :placeholder="$t('common.placeholder') + '值'" />
-        </ElFormItem>
+      <ElFormItem label="值" prop="value">
+        <ElInput v-model="formData.value" :placeholder="$t('common.placeholder') + '值'" />
+      </ElFormItem>
 
-        <ElFormItem label="启用状态" prop="enabled">
-          <ElRadioGroup v-model="formData.enabled">
-            <ElRadio :value="true" label="启用" />
-            <ElRadio :value="false" label="禁用" />
-          </ElRadioGroup>
-        </ElFormItem>
+      <ElFormItem label="启用状态" prop="enabled">
+        <ElRadioGroup v-model="formData.enabled">
+          <ElRadio :value="true" label="启用" />
+          <ElRadio :value="false" label="禁用" />
+        </ElRadioGroup>
+      </ElFormItem>
 
-        <ElFormItem label="描述" prop="description">
-          <ElInput
-            v-model="formData.description"
-            type="textarea"
-            :rows="3"
-            :placeholder="$t('common.placeholder') + '描述'"
-          />
-        </ElFormItem>
-      </ElForm>
-    </ElScrollbar>
+      <ElFormItem label="描述" prop="description">
+        <ElInput
+          v-model="formData.description"
+          type="textarea"
+          :rows="3"
+          :placeholder="$t('common.placeholder') + '描述'"
+        />
+      </ElFormItem>
+    </ElForm>
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.close') }}</ElButton>

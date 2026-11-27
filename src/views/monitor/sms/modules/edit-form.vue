@@ -51,19 +51,17 @@ const {
     immediate: false,
     resetAfterSubmiting: true,
     initialForm: {
-      id: null,
+      id: 0,
       phone: '',
       content: '',
       templateId: '',
       smsOperator: '',
       isSuccess: true
     } as unknown as FormType,
-    async middleware(ctx, next) {
-      // 校验通过才发起提交，完成后复位按钮 loading
-      validate().then(async () => {
-        await next();
-        ctx.proxyStates.loading.v = false;
-      });
+    async middleware(_, next) {
+      // 校验通过才发起提交；promise 链必须 await 透传给 alova，请求无论成败它都会自动复位 loading
+      await validate();
+      await next();
     }
   }
 );
@@ -104,38 +102,36 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-900px">
-    <ElScrollbar class="h-480px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
-        <ElFormItem label="手机号" prop="phone">
-          <ElInput v-model="formData.phone" :placeholder="$t('common.placeholder') + '手机号'" />
-        </ElFormItem>
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px" @close="closeForm">
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
+      <ElFormItem label="手机号" prop="phone">
+        <ElInput v-model="formData.phone" :placeholder="$t('common.placeholder') + '手机号'" />
+      </ElFormItem>
 
-        <ElFormItem label="模板编号" prop="templateId">
-          <ElInput v-model="formData.templateId" :placeholder="$t('common.placeholder') + '模板编号'" />
-        </ElFormItem>
+      <ElFormItem label="模板编号" prop="templateId">
+        <ElInput v-model="formData.templateId" :placeholder="$t('common.placeholder') + '模板编号'" />
+      </ElFormItem>
 
-        <ElFormItem label="服务商" prop="smsOperator">
-          <ElInput v-model="formData.smsOperator" :placeholder="$t('common.placeholder') + '服务商'" />
-        </ElFormItem>
+      <ElFormItem label="服务商" prop="smsOperator">
+        <ElInput v-model="formData.smsOperator" :placeholder="$t('common.placeholder') + '服务商'" />
+      </ElFormItem>
 
-        <ElFormItem label="短信内容" prop="content">
-          <ElInput
-            v-model="formData.content"
-            type="textarea"
-            :rows="3"
-            :placeholder="$t('common.placeholder') + '短信内容'"
-          />
-        </ElFormItem>
+      <ElFormItem label="短信内容" prop="content">
+        <ElInput
+          v-model="formData.content"
+          type="textarea"
+          :rows="3"
+          :placeholder="$t('common.placeholder') + '短信内容'"
+        />
+      </ElFormItem>
 
-        <ElFormItem label="发送状态" prop="isSuccess">
-          <ElRadioGroup v-model="formData.isSuccess">
-            <ElRadio :value="true" label="成功" />
-            <ElRadio :value="false" label="失败" />
-          </ElRadioGroup>
-        </ElFormItem>
-      </ElForm>
-    </ElScrollbar>
+      <ElFormItem label="发送状态" prop="isSuccess">
+        <ElRadioGroup v-model="formData.isSuccess">
+          <ElRadio :value="true" label="成功" />
+          <ElRadio :value="false" label="失败" />
+        </ElRadioGroup>
+      </ElFormItem>
+    </ElForm>
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.close') }}</ElButton>

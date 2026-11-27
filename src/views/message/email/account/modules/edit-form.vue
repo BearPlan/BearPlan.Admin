@@ -49,7 +49,7 @@ const {
     immediate: false,
     resetAfterSubmiting: true,
     initialForm: {
-      id: null,
+      id: 0,
       email: null,
       displayName: null,
       host: null,
@@ -59,11 +59,10 @@ const {
       enableSsl: true,
       useDefaultCredentials: false
     } as unknown as FormType,
-    async middleware(ctx, next) {
-      validate().then(async () => {
-        await next();
-        ctx.proxyStates.loading.v = false;
-      });
+    async middleware(_, next) {
+      // 校验通过才发起提交；promise 链必须 await 透传给 alova，请求无论成败它都会自动复位 loading
+      await validate();
+      await next();
     }
   }
 );
@@ -100,64 +99,62 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-720px">
-    <ElScrollbar class="h-420px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="120">
-        <ElRow>
-          <ElCol :span="24">
-            <ElFormItem label="邮箱地址" prop="email">
-              <ElInput v-model="formData.email" :placeholder="$t('common.placeholder') + '邮箱地址'" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="24">
-            <ElFormItem label="显示名称" prop="displayName">
-              <ElInput v-model="formData.displayName" :placeholder="$t('common.placeholder') + '显示名称'" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="SMTP 主机" prop="host">
-              <ElInput v-model="formData.host" :placeholder="$t('common.placeholder') + 'SMTP 主机'" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="端口" prop="port">
-              <ElInputNumber v-model="formData.port" class="w-full" :min="1" :max="65535" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="用户名" prop="userName">
-              <ElInput v-model="formData.userName" :placeholder="$t('common.placeholder') + '用户名'" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="密码" prop="password">
-              <ElInput
-                v-model="formData.password"
-                type="password"
-                show-password
-                :placeholder="$t('common.placeholder') + '密码'"
-              />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="启用 SSL" prop="enableSsl">
-              <ElRadioGroup v-model="formData.enableSsl">
-                <ElRadio :value="true" label="是" />
-                <ElRadio :value="false" label="否" />
-              </ElRadioGroup>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="默认凭据" prop="useDefaultCredentials">
-              <ElRadioGroup v-model="formData.useDefaultCredentials">
-                <ElRadio :value="true" label="是" />
-                <ElRadio :value="false" label="否" />
-              </ElRadioGroup>
-            </ElFormItem>
-          </ElCol>
-        </ElRow>
-      </ElForm>
-    </ElScrollbar>
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px" @close="closeForm">
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="120">
+      <ElRow>
+        <ElCol :span="24">
+          <ElFormItem label="邮箱地址" prop="email">
+            <ElInput v-model="formData.email" :placeholder="$t('common.placeholder') + '邮箱地址'" />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="24">
+          <ElFormItem label="显示名称" prop="displayName">
+            <ElInput v-model="formData.displayName" :placeholder="$t('common.placeholder') + '显示名称'" />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem label="SMTP 主机" prop="host">
+            <ElInput v-model="formData.host" :placeholder="$t('common.placeholder') + 'SMTP 主机'" />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem label="端口" prop="port">
+            <ElInputNumber v-model="formData.port" class="w-full" :min="1" :max="65535" />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem label="用户名" prop="userName">
+            <ElInput v-model="formData.userName" :placeholder="$t('common.placeholder') + '用户名'" />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem label="密码" prop="password">
+            <ElInput
+              v-model="formData.password"
+              type="password"
+              show-password
+              :placeholder="$t('common.placeholder') + '密码'"
+            />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem label="启用 SSL" prop="enableSsl">
+            <ElRadioGroup v-model="formData.enableSsl">
+              <ElRadio :value="true" label="是" />
+              <ElRadio :value="false" label="否" />
+            </ElRadioGroup>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem label="默认凭据" prop="useDefaultCredentials">
+            <ElRadioGroup v-model="formData.useDefaultCredentials">
+              <ElRadio :value="true" label="是" />
+              <ElRadio :value="false" label="否" />
+            </ElRadioGroup>
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
+    </ElForm>
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.cancel') }}</ElButton>

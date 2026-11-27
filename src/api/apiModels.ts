@@ -139,6 +139,7 @@ export type SchemaName =
   | 'UpdateJobParam'
   | 'UpdateMenuParam'
   | 'UpdateMyInfoParam'
+  | 'UpdatePwdParam'
   | 'UpdateQuartzNetParam'
   | 'UpdateQueuedEmailParam'
   | 'UpdateRoleParam'

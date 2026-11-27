@@ -36,6 +36,16 @@ html.dark:root,
   }
 }
 
+/* 侧边栏/顶栏内的菜单背景透明、跟随容器底色：暗黑模式下 Element Plus 菜单默认
+   取 --el-fill-color-blank(#141414)，与容器暗黑底色 rgb(28,28,28) 存在色差，
+   菜单未占满高度时下方空白区露出容器色形成明显分界；弹出子菜单挂在 body 下不受影响 */
+#__GLOBAL_SIDER_MENU__,
+#__GLOBAL_HEADER_MENU__ {
+  .el-menu {
+    --el-menu-bg-color: transparent;
+  }
+}
+
 :focus-visible {
   outline: 0;
 }

@@ -2839,6 +2839,18 @@ export interface Role {
 
   authCode: string | null;
   /**
+   * 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+   */
+
+  versionString: string | null;
+  /**
+   * 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+   * 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+   * 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+   */
+
+  versions: VersionEnum[] | null;
+  /**
    * 菜单集合
    */
 
@@ -2891,6 +2903,16 @@ export interface RoleDTO {
    */
 
   authCode: string | null;
+  /**
+   * 权限作用范围（端集合 JSON 数组字符串，与实体 BearPlan.Entity.Core.Permission.Role.Role.VersionString 同名自动映射）
+   */
+
+  versionString: string | null;
+  /**
+   * 权限作用范围端集合（与 BearPlan.Models.Core.Permission.Role.RoleDTO.VersionString 双向映射，不落库，仅供列表展示）
+   */
+
+  versions: VersionEnum[] | null;
 }
 export interface RoleDTOPagedResults {
   pagerInfo: PagerInfo;
@@ -2948,6 +2970,18 @@ export interface RoleInfo {
    */
 
   authCode: string | null;
+  /**
+   * 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+   */
+
+  versionString: string | null;
+  /**
+   * 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+   * 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+   * 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+   */
+
+  versions: VersionEnum[] | null;
   /**
    * 菜单集合
    */
@@ -4917,6 +4951,18 @@ export interface UpdateMyInfoParam {
 
   value: string | null;
 }
+export interface UpdatePwdParam {
+  /**
+   * 用户ID
+   */
+
+  id: string;
+  /**
+   * 新密码（RSA 密文，服务端解密）
+   */
+
+  newPassword: string | null;
+}
 export interface UpdateQuartzNetParam {
   /**
    * 主键
@@ -5187,6 +5233,11 @@ export interface UpdateRoleParam {
 
   authCode: string | null;
   /**
+   * 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+   */
+
+  versionString: string | null;
+  /**
    * 菜单集合
    */
 
@@ -5211,6 +5262,13 @@ export interface UpdateRoleParam {
    */
 
   deptIds: string[] | null;
+  /**
+   * 重写基类 Versions 绑定形态：基类 List 计算属性被 Newtonsoft「填充 getter 实例」不调 setter，
+   * versions 数组静默丢失；此处 getter 在未绑定态返回 null 强制走 setter，
+   * setter 回写落库真身 BearPlan.Entity.Core.Permission.Role.Role.VersionString，数组直接绑定即可生效
+   */
+
+  versions: VersionEnum[] | null;
 }
 export interface UpdateSettingParam {
   /**
@@ -5865,6 +5923,11 @@ export interface UpdateUserCenterParam {
    */
 
   nickName: string | null;
+  /**
+   * 个性签名
+   */
+
+  signature: string | null;
   /**
    * 性别
    */
@@ -6662,6 +6725,16 @@ declare global {
        *     dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *     // 角色代码
        *     authCode: string | null
+       *     // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *     versionString: string | null
+       *     // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *     // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *     // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *     // [params1] start
+       *     // [items] start
+       *     // [items] end
+       *     // [params1] end
+       *     versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *     // 菜单集合
        *     // [params1] start
        *     // [items] start
@@ -7372,6 +7445,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -8076,6 +8159,16 @@ declare global {
        *     dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *     // 角色代码
        *     authCode: string | null
+       *     // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *     versionString: string | null
+       *     // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *     // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *     // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *     // [params1] start
+       *     // [items] start
+       *     // [items] end
+       *     // [params1] end
+       *     versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *     // 菜单集合
        *     // [params1] start
        *     // [items] start
@@ -9386,6 +9479,16 @@ declare global {
        *             dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *             // 角色代码
        *             authCode: string | null
+       *             // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *             versionString: string | null
+       *             // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *             // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *             // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *             // [params1] start
+       *             // [items] start
+       *             // [items] end
+       *             // [params1] end
+       *             versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *             // 菜单集合
        *             // [params1] start
        *             // [items] start
@@ -9606,6 +9709,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -9874,6 +9987,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -10432,6 +10555,16 @@ declare global {
        *               dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *               // 角色代码
        *               authCode: string | null
+       *               // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *               versionString: string | null
+       *               // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *               // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *               // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *               // [params1] start
+       *               // [items] start
+       *               // [items] end
+       *               // [params1] end
+       *               versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *               // 菜单集合
        *               // [params1] start
        *               // [items] start
@@ -10584,6 +10717,16 @@ declare global {
        *             dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *             // 角色代码
        *             authCode: string | null
+       *             // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *             versionString: string | null
+       *             // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *             // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *             // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *             // [params1] start
+       *             // [items] start
+       *             // [items] end
+       *             // [params1] end
+       *             versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *             // 菜单集合
        *             // [params1] start
        *             // [items] start
@@ -10919,6 +11062,16 @@ declare global {
        *               dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *               // 角色代码
        *               authCode: string | null
+       *               // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *               versionString: string | null
+       *               // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *               // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *               // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *               // [params1] start
+       *               // [items] start
+       *               // [items] end
+       *               // [params1] end
+       *               versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *               // 菜单集合
        *               // [params1] start
        *               // [items] start
@@ -11071,6 +11224,16 @@ declare global {
        *             dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *             // 角色代码
        *             authCode: string | null
+       *             // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *             versionString: string | null
+       *             // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *             // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *             // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *             // [params1] start
+       *             // [items] start
+       *             // [items] end
+       *             // [params1] end
+       *             versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *             // 菜单集合
        *             // [params1] start
        *             // [items] start
@@ -11893,6 +12056,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -12045,6 +12218,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -12302,6 +12485,16 @@ declare global {
        *     dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *     // 角色代码
        *     authCode: string | null
+       *     // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *     versionString: string | null
+       *     // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *     // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *     // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *     // [params1] start
+       *     // [items] start
+       *     // [items] end
+       *     // [params1] end
+       *     versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *     // 菜单集合
        *     // [params1] start
        *     // [items] start
@@ -12964,6 +13157,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -13116,6 +13319,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -13373,6 +13586,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -14148,6 +14371,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -14300,6 +14533,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -14557,6 +14800,16 @@ declare global {
        *     dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *     // 角色代码
        *     authCode: string | null
+       *     // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *     versionString: string | null
+       *     // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *     // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *     // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *     // [params1] start
+       *     // [items] start
+       *     // [items] end
+       *     // [params1] end
+       *     versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *     // 菜单集合
        *     // [params1] start
        *     // [items] start
@@ -17623,6 +17876,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -17775,6 +18038,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -18233,6 +18506,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -18385,6 +18668,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -18876,6 +19169,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -19028,6 +19331,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -19416,6 +19729,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -19568,6 +19891,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -22576,6 +22909,8 @@ declare global {
        *   dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *   // 角色代码
        *   authCode: string | null
+       *   // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *   versionString: string | null
        *   // 菜单集合
        *   // [params1] start
        *   // [items] start
@@ -22750,6 +23085,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -22970,6 +23315,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -23314,6 +23669,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -23466,6 +23831,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -23753,6 +24128,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -24158,6 +24543,14 @@ declare global {
        *   // [items] end
        *   // [params1] end
        *   deptIds: string[] | null
+       *   // 重写基类 Versions 绑定形态：基类 List 计算属性被 Newtonsoft「填充 getter 实例」不调 setter，
+       *   // versions 数组静默丢失；此处 getter 在未绑定态返回 null 强制走 setter，
+       *   // setter 回写落库真身 BearPlan.Entity.Core.Permission.Role.Role.VersionString，数组直接绑定即可生效
+       *   // [params1] start
+       *   // [items] start
+       *   // [items] end
+       *   // [params1] end
+       *   versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        * }
        * ```
        *
@@ -24345,6 +24738,16 @@ declare global {
        *     dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *     // 角色代码
        *     authCode: string | null
+       *     // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *     versionString: string | null
+       *     // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *     // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *     // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *     // [params1] start
+       *     // [items] start
+       *     // [items] end
+       *     // [params1] end
+       *     versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *     // 菜单集合
        *     // [params1] start
        *     // [items] start
@@ -24519,6 +24922,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -24739,6 +25152,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -25083,6 +25506,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -25235,6 +25668,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -25522,6 +25965,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -26013,6 +26466,14 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，与实体 BearPlan.Entity.Core.Permission.Role.Role.VersionString 同名自动映射）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Models.Core.Permission.Role.RoleDTO.VersionString 双向映射，不落库，仅供列表展示）
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *     }> | null
        *   }
        *   msg: string
@@ -26136,6 +26597,16 @@ declare global {
        *     dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *     // 角色代码
        *     authCode: string | null
+       *     // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *     versionString: string | null
+       *     // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *     // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *     // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *     // [params1] start
+       *     // [items] start
+       *     // [items] end
+       *     // [params1] end
+       *     versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *     // 菜单集合
        *     // [params1] start
        *     // [items] start
@@ -26310,6 +26781,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -26530,6 +27011,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -26874,6 +27365,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -27026,6 +27527,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -27313,6 +27824,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -27825,6 +28346,8 @@ declare global {
        *   dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *   // 角色代码
        *   authCode: string | null
+       *   // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *   versionString: string | null
        *   // 菜单集合
        *   // [params1] start
        *   // [items] start
@@ -27999,6 +28522,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -28219,6 +28752,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -28563,6 +29106,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -28715,6 +29268,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -29002,6 +29565,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -29407,6 +29980,14 @@ declare global {
        *   // [items] end
        *   // [params1] end
        *   deptIds: string[] | null
+       *   // 重写基类 Versions 绑定形态：基类 List 计算属性被 Newtonsoft「填充 getter 实例」不调 setter，
+       *   // versions 数组静默丢失；此处 getter 在未绑定态返回 null 强制走 setter，
+       *   // setter 回写落库真身 BearPlan.Entity.Core.Permission.Role.Role.VersionString，数组直接绑定即可生效
+       *   // [params1] start
+       *   // [items] start
+       *   // [items] end
+       *   // [params1] end
+       *   versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        * }
        * ```
        *
@@ -33015,6 +33596,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -33167,6 +33758,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -33632,6 +34233,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -33784,6 +34395,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -34341,6 +34962,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -34493,6 +35124,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -35660,6 +36301,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -35880,6 +36531,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -36148,6 +36809,16 @@ declare global {
        *     dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *     // 角色代码
        *     authCode: string | null
+       *     // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *     versionString: string | null
+       *     // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *     // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *     // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *     // [params1] start
+       *     // [items] start
+       *     // [items] end
+       *     // [params1] end
+       *     versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *     // 菜单集合
        *     // [params1] start
        *     // [items] start
@@ -36706,6 +37377,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -36858,6 +37539,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -37193,6 +37884,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -37345,6 +38046,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -37798,6 +38509,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -38018,6 +38739,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -38286,6 +39017,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -38844,6 +39585,16 @@ declare global {
        *             dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *             // 角色代码
        *             authCode: string | null
+       *             // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *             versionString: string | null
+       *             // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *             // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *             // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *             // [params1] start
+       *             // [items] start
+       *             // [items] end
+       *             // [params1] end
+       *             versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *             // 菜单集合
        *             // [params1] start
        *             // [items] start
@@ -38996,6 +39747,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -39331,6 +40092,16 @@ declare global {
        *             dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *             // 角色代码
        *             authCode: string | null
+       *             // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *             versionString: string | null
+       *             // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *             // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *             // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *             // [params1] start
+       *             // [items] start
+       *             // [items] end
+       *             // [params1] end
+       *             versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *             // 菜单集合
        *             // [params1] start
        *             // [items] start
@@ -39483,6 +40254,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -39972,6 +40753,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -40192,6 +40983,16 @@ declare global {
        *       dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *       // 角色代码
        *       authCode: string | null
+       *       // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *       versionString: string | null
+       *       // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *       // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *       // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *       // [params1] start
+       *       // [items] start
+       *       // [items] end
+       *       // [params1] end
+       *       versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *       // 菜单集合
        *       // [params1] start
        *       // [items] start
@@ -40460,6 +41261,16 @@ declare global {
        *     dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *     // 角色代码
        *     authCode: string | null
+       *     // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *     versionString: string | null
+       *     // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *     // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *     // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *     // [params1] start
+       *     // [items] start
+       *     // [items] end
+       *     // [params1] end
+       *     versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *     // 菜单集合
        *     // [params1] start
        *     // [items] start
@@ -41018,6 +41829,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -41170,6 +41991,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -41505,6 +42336,16 @@ declare global {
        *           dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *           // 角色代码
        *           authCode: string | null
+       *           // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *           versionString: string | null
+       *           // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *           // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *           // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *           // [params1] start
+       *           // [items] start
+       *           // [items] end
+       *           // [params1] end
+       *           versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *           // 菜单集合
        *           // [params1] start
        *           // [items] start
@@ -41657,6 +42498,16 @@ declare global {
        *         dataScopeType: 0 | 1 | 2 | 3 | 4 | 5
        *         // 角色代码
        *         authCode: string | null
+       *         // 权限作用范围（端集合 JSON 数组字符串，如 [1,2]；落库真身，请求绑定以此字段为准）
+       *         versionString: string | null
+       *         // 权限作用范围端集合（与 BearPlan.Entity.Core.Permission.Role.Role.VersionString 双向映射，不落库；空集合表示未配置）。
+       *         // 注意：Newtonsoft 反序列化对 getter 返回实例的 List 属性走「填充」语义不调 setter，
+       *         // 请求侧 versions 数组不会回写 BearPlan.Entity.Core.Permission.Role.Role.VersionString，由前端提交时同步该字符串
+       *         // [params1] start
+       *         // [items] start
+       *         // [items] end
+       *         // [params1] end
+       *         versions: (0 | 1 | 2 | 3 | 5 | 6 | 7)[] | null
        *         // 菜单集合
        *         // [params1] start
        *         // [items] start
@@ -41916,6 +42767,8 @@ declare global {
        * type RequestBody = {
        *   // 昵称
        *   nickName: string | null
+       *   // 个性签名
+       *   signature: string | null
        *   // 性别
        *   sex: 0 | 1 | 2
        *   // 电话
@@ -42067,9 +42920,9 @@ declare global {
       /**
        * ---
        *
-       * [PUT] 修改密码
+       * [PUT] 修改我的密码（需验证原密码）
        *
-       * **path:** /api/User/UpdatePassword
+       * **path:** /api/User/UpdateMyPwd
        *
        * ---
        *
@@ -42097,7 +42950,7 @@ declare global {
        * }
        * ```
        */
-      UpdatePassword<
+      UpdateMyPwd<
         Config extends Alova2MethodConfig<{
           code: string;
           data: null;
@@ -42115,7 +42968,7 @@ declare global {
           msg: string;
           success: boolean;
         },
-        'User.UpdatePassword',
+        'User.UpdateMyPwd',
         Config
       >;
       /**
@@ -42166,6 +43019,58 @@ declare global {
           success: boolean;
         },
         'User.UpdatePreferencesConfig',
+        Config
+      >;
+      /**
+       * ---
+       *
+       * [PUT] 修改用户密码（管理员操作，无须原密码）
+       *
+       * **path:** /api/User/UpdatePwd
+       *
+       * ---
+       *
+       * **RequestBody**
+       * ```ts
+       * type RequestBody = {
+       *   // 用户ID
+       *   id: string
+       *   // 新密码（RSA 密文，服务端解密）
+       *   newPassword: string | null
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = {
+       *   code: string
+       *   data: null
+       *   msg: string
+       *   success: boolean
+       * }
+       * ```
+       */
+      UpdatePwd<
+        Config extends Alova2MethodConfig<{
+          code: string;
+          data: null;
+          msg: string;
+          success: boolean;
+        }> & {
+          data: UpdatePwdParam;
+        }
+      >(
+        config: Config
+      ): Alova2Method<
+        {
+          code: string;
+          data: null;
+          msg: string;
+          success: boolean;
+        },
+        'User.UpdatePwd',
         Config
       >;
       /**

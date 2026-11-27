@@ -147,7 +147,7 @@ const loading = computed<boolean>(() => delLoading.value || dataLoading.value);
             <!-- 邮件队列入库记录只读，无新增按钮，仅保留批量删除/导出/刷新/列设置 -->
             <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDelete(checkedRowKeys)">
               <template #reference>
-                <ElButton type="danger" plain :disabled="checkedRowKeys.length === 0">
+                <ElButton size="small" type="danger" plain :disabled="checkedRowKeys.length === 0">
                   <template #icon>
                     <icon-ic-round-delete class="text-icon" />
                   </template>
@@ -155,13 +155,13 @@ const loading = computed<boolean>(() => delLoading.value || dataLoading.value);
                 </ElButton>
               </template>
             </ElPopconfirm>
-            <ElButton ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
+            <ElButton size="small" ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
               <template #icon>
                 <icon-charm:download class="text-icon" />
               </template>
               {{ $t('导出') }}
             </ElButton>
-            <ElButton @click="reload">
+            <ElButton size="small" @click="reload">
               <template #icon>
                 <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': loading }" />
               </template>

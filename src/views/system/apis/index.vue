@@ -139,19 +139,19 @@ const loading = computed<boolean>(() => refreshLoading.value || dataLoading.valu
           <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
           <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
             <!-- API 路由由后端扫描生成，仅提供更新入口，无新增/删除 -->
-            <ElButton ghost type="primary" @click="refreshApis">
+            <ElButton size="small" ghost type="primary" @click="refreshApis">
               <template #icon>
                 <icon-mdi-refresh class="text-icon" />
               </template>
               更新API
             </ElButton>
-            <ElButton ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
+            <ElButton size="small" ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
               <template #icon>
                 <icon-charm:download class="text-icon" />
               </template>
               {{ $t('导出') }}
             </ElButton>
-            <ElButton @click="reload">
+            <ElButton size="small" @click="reload">
               <template #icon>
                 <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': loading }" />
               </template>

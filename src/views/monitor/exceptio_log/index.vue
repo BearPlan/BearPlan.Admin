@@ -101,13 +101,13 @@ const handleClose = (prop: string) => {
           <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
           <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
             <!-- 异常日志只读：后端无删除接口，仅保留导出与刷新 -->
-            <ElButton ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
+            <ElButton size="small" ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
               <template #icon>
                 <icon-charm:download class="text-icon" />
               </template>
               {{ $t('导出') }}
             </ElButton>
-            <ElButton @click="reload">
+            <ElButton size="small" @click="reload">
               <template #icon>
                 <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': dataLoading }" />
               </template>

@@ -51,16 +51,14 @@ const {
     immediate: false,
     resetAfterSubmiting: true,
     initialForm: {
-      id: null,
+      id: 0,
       accessToken: '',
       refreshToken: ''
     } as unknown as FormType,
-    async middleware(ctx, next) {
-      // 校验通过才发起提交，完成后复位按钮 loading
-      validate().then(async () => {
-        await next();
-        ctx.proxyStates.loading.v = false;
-      });
+    async middleware(_, next) {
+      // 校验通过才发起提交；promise 链必须 await 透传给 alova，请求无论成败它都会自动复位 loading
+      await validate();
+      await next();
     }
   }
 );
@@ -101,28 +99,26 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-900px">
-    <ElScrollbar class="h-480px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
-        <ElFormItem label="访问令牌" prop="accessToken">
-          <ElInput
-            v-model="formData.accessToken"
-            type="textarea"
-            :rows="3"
-            :placeholder="$t('common.placeholder') + '登录token的MD5值'"
-          />
-        </ElFormItem>
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px" @close="closeForm">
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
+      <ElFormItem label="访问令牌" prop="accessToken">
+        <ElInput
+          v-model="formData.accessToken"
+          type="textarea"
+          :rows="3"
+          :placeholder="$t('common.placeholder') + '登录token的MD5值'"
+        />
+      </ElFormItem>
 
-        <ElFormItem label="刷新令牌" prop="refreshToken">
-          <ElInput
-            v-model="formData.refreshToken"
-            type="textarea"
-            :rows="3"
-            :placeholder="$t('common.placeholder') + '刷新令牌'"
-          />
-        </ElFormItem>
-      </ElForm>
-    </ElScrollbar>
+      <ElFormItem label="刷新令牌" prop="refreshToken">
+        <ElInput
+          v-model="formData.refreshToken"
+          type="textarea"
+          :rows="3"
+          :placeholder="$t('common.placeholder') + '刷新令牌'"
+        />
+      </ElFormItem>
+    </ElForm>
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.close') }}</ElButton>

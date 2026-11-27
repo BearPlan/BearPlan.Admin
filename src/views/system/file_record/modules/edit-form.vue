@@ -69,10 +69,17 @@ const handleUpload = async () => {
   await upload();
   fileList.value = [];
 };
+
+/** 关闭清理：清空业务场景与上传列表/结果，下次打开为干净状态 */
+const closeForm = () => {
+  scene.value = '';
+  fileList.value = [];
+  uploadResult.value = [];
+};
 </script>
 
 <template>
-  <ElDialog v-model="visible" title="上传文件" preset="card" class="w-600px">
+  <ElDialog v-model="visible" title="上传文件" preset="card" class="w-800px" @close="closeForm">
     <div class="flex flex-col gap-12px">
       <ElInput v-model="scene" placeholder="业务场景（选填，如 avatar / goods / banner）" clearable />
 

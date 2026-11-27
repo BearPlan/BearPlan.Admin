@@ -67,6 +67,7 @@ const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthenticati
             refreshToken
           },
           transform: res => {
+            debugger;
             localStg.set('token', `${res.data.tokenType} ${res.data.accessToken}`);
             localStg.set('refreshToken', res.data.refreshToken || '');
           }
@@ -143,26 +144,7 @@ export const alovaInstance = createAlova({
       // throw new Error(rawData);
     },
     onError: async error => {
-      // if (err.response?.data?.code === ResultEnum.TIMEOUT) {
-      //   ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
-      //     confirmButtonText: '确认',
-      //     type: 'warning',
-      //     showCancelButton: false,
-      //     closeOnClickModal: false,
-
-      //     callback: (action: Action) => {
-      //       if (action === 'confirm') {
-      //         const authStore = useAuthStore();
-      //         authStore.logout();
-      //       }
-      //     }
-      //   });
-      // } else {
-      //   window.$message?.error(err.response?.data?.msg || '系统出错');
-      //   throw new Error(err.response?.data?.msg || '系统出错');
-      // }
-
-      // return Promise.reject( err.response?.data);
+      debugger;
 
       if (error.status === ResultEnum.TIMEOUT) {
         throw error;

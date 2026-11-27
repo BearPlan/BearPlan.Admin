@@ -41,7 +41,7 @@ function refresh() {
   <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
     <slot name="prefix"></slot>
     <slot name="default">
-      <ElButton plain type="primary" @click="add">
+      <ElButton size="small" plain type="primary" @click="add">
         <template #icon>
           <icon-ic-round-plus class="text-icon" />
         </template>
@@ -49,7 +49,7 @@ function refresh() {
       </ElButton>
       <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="batchDelete">
         <template #reference>
-          <ElButton type="danger" plain :disabled="disabledDelete">
+          <ElButton size="small" type="danger" plain :disabled="disabledDelete">
             <template #icon>
               <icon-ic-round-delete class="text-icon" />
             </template>
@@ -58,7 +58,7 @@ function refresh() {
         </template>
       </ElPopconfirm>
     </slot>
-    <ElButton @click="refresh">
+    <ElButton size="small" @click="refresh">
       <template #icon>
         <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': loading }" />
       </template>

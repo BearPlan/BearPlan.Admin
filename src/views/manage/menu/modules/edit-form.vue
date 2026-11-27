@@ -81,7 +81,7 @@ const {
     immediate: false,
     resetAfterSubmiting: true,
     initialForm: {
-      id: null,
+      id: 0,
       parentId: null,
       menuType: MenuTypeEnum.Menu,
       iconType: IconTypeEnum.iconify,
@@ -95,24 +95,18 @@ const {
       buttons: [],
       querys: []
     } as unknown as FormType,
-    async middleware(ctx, next) {
-      validate().then(async () => {
-        // Ensure proper icon field handling based on iconType
-        const formToSubmit = { ...formData.value };
-        if (formToSubmit.iconType === IconTypeEnum.iconify) {
-          // For iconify icons, use icon field and clear localIcon
-          formToSubmit.localIcon = null;
-        } else if (formToSubmit.iconType === IconTypeEnum.local) {
-          // For local icons, use localIcon field and clear icon
-          formToSubmit.icon = null;
-        }
-
-        // Update the form data with the corrected values
-        Object.assign(formData.value, formToSubmit);
-
-        await next();
-        ctx.proxyStates.loading.v = false;
-      });
+    async middleware(_, next) {
+      // 校验通过才发起提交；promise 链必须 await 透传给 alova，请求无论成败它都会自动复位 loading
+      await validate();
+      // 按图标类型清理另一套图标字段，避免无效数据入库
+      const formToSubmit = { ...formData.value };
+      if (formToSubmit.iconType === IconTypeEnum.iconify) {
+        formToSubmit.localIcon = null;
+      } else if (formToSubmit.iconType === IconTypeEnum.local) {
+        formToSubmit.icon = null;
+      }
+      Object.assign(formData.value, formToSubmit);
+      await next();
     }
   }
 );
@@ -220,282 +214,280 @@ const loading = computed<boolean>(() => subLoading.value || infoLoading.value);
 </script>
 
 <template>
-  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px">
-    <ElScrollbar class="h-480px pr-20px">
-      <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
-        <ElRow>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.parent')" prop="menuType">
-              <TreeSelect
-                v-model="formData.parentId"
-                val-key="id"
-                :types="[MenuTypeEnum.Directory]"
-                :placeholder="$t('common.placeholderSelect')"
-              ></TreeSelect>
-            </ElFormItem>
-          </ElCol>
+  <ElDialog v-model="visible" :title="title" preset="card" class="w-800px" @close="closeForm">
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-placement="left" :label-width="100">
+      <ElRow>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.parent')" prop="menuType">
+            <TreeSelect
+              v-model="formData.parentId"
+              val-key="id"
+              :types="[MenuTypeEnum.Directory]"
+              :placeholder="$t('common.placeholderSelect')"
+            ></TreeSelect>
+          </ElFormItem>
+        </ElCol>
 
-          <ElCol :span="12">{{ formData.parentId }}</ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.iconType')" prop="iconType">
-              <ElRadioGroup v-model="formData.iconType">
-                <ElRadio
-                  v-for="item in getEnumValue(IconTypeEnum)"
-                  :key="item"
-                  :value="item"
-                  :label="$t(IconTypeEnum[item])"
-                />
-              </ElRadioGroup>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.icon')" prop="icon">
-              <template v-if="formData.iconType === IconTypeEnum.iconify">
-                <ElInput
-                  v-model="formData.icon"
-                  :placeholder="$t('common.placeholder') + $t('menu.icon')"
-                  class="flex-1"
-                >
-                  <template #suffix>
-                    <SvgIcon v-if="formData.icon" :icon="formData.icon" class="text-icon" />
-                  </template>
-                </ElInput>
-              </template>
-              <template v-if="formData.iconType === IconTypeEnum.local">
-                <ElSelect
-                  v-model="formData.localIcon as string"
-                  :placeholder="$t('common.placeholder') + $t('menu.icon')"
-                  clearable
-                  filterable
-                >
-                  <ElOption
-                    v-for="(item, index) in localIconOptions"
-                    :key="index"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                    <div class="flex-y-center gap-16px">
-                      <SvgIcon :local-icon="item.value" class="text-icon" />
-                      <span>{{ item.label }}</span>
-                    </div>
-                  </ElOption>
-                  <template #label="{ value }">
-                    <div class="flex items-center">
-                      <SvgIcon :local-icon="value" class="mr-1 text-icon" />
-                      <span>{{ value }}</span>
-                    </div>
-                  </template>
-                </ElSelect>
-              </template>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem label="图标预览">
-              <div class="flex items-center gap-2">
-                <template v-if="formData.iconType === IconTypeEnum.iconify && formData.icon">
-                  <SvgIcon :icon="formData.icon" class="text-24px" />
-                  <span class="text-sm text-gray-500">{{ formData.icon }}</span>
-                </template>
-                <template v-else-if="formData.iconType === IconTypeEnum.local && formData.localIcon">
-                  <SvgIcon :local-icon="formData.localIcon" class="text-24px" />
-                  <span class="text-sm text-gray-500">{{ formData.localIcon }}</span>
-                </template>
-                <span v-else class="text-sm text-gray-400">请选择图标</span>
-              </div>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.menuType')" prop="menuType">
-              <ElRadioGroup v-model="formData.menuType">
-                <ElRadio
-                  v-for="item in getEnumValue(MenuTypeEnum).filter(item => item !== MenuTypeEnum.Query)"
-                  :key="item"
-                  :value="item"
-                  :label="$t(MenuTypeEnum[item])"
-                />
-              </ElRadioGroup>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.page')" prop="page">
-              <ElInput
-                v-model="formData.component"
-                :placeholder="$t('common.placeholder') + $t('menu.page')"
-                :disabled="formData.menuType !== MenuTypeEnum.Menu"
+        <ElCol :span="12">{{ formData.parentId }}</ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.iconType')" prop="iconType">
+            <ElRadioGroup v-model="formData.iconType">
+              <ElRadio
+                v-for="item in getEnumValue(IconTypeEnum)"
+                :key="item"
+                :value="item"
+                :label="$t(IconTypeEnum[item])"
               />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.menuName')" prop="title" class="flex-center justify-around">
+            </ElRadioGroup>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.icon')" prop="icon">
+            <template v-if="formData.iconType === IconTypeEnum.iconify">
               <ElInput
-                v-model="formData.title"
-                :placeholder="$t('common.placeholder') + $t('menu.menuName')"
+                v-model="formData.icon"
+                :placeholder="$t('common.placeholder') + $t('menu.icon')"
                 class="flex-1"
-              />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.routeName')" prop="name">
-              <ElInput v-model="formData.name" :placeholder="$t('common.placeholder') + $t('menu.routeName')" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.pathParam')" prop="pathParam">
-              <ElInput v-model="formData.pathParam" :placeholder="$t('common.placeholder') + $t('menu.pathParam')" />
-            </ElFormItem>
-          </ElCol>
-
-          <ElCol v-if="!formData.parentId" :span="12">
-            <ElFormItem :label="$t('menu.layout')" prop="layout">
-              <ElSelect v-model="formData.layout" clearable :placeholder="$t('common.placeholder') + $t('menu.layout')">
-                <ElOption
-                  v-for="item in getEnumValue(LayoutTypeEnum)"
-                  :key="item"
-                  :value="item"
-                  :label="$t(LayoutTypeEnum[item])"
-                ></ElOption>
-              </ElSelect>
-            </ElFormItem>
-          </ElCol>
-
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.order')" prop="order">
-              <ElInputNumber
-                v-model="formData.order"
-                class="w-full"
-                :placeholder="$t('common.placeholder') + $t('menu.order')"
-              />
-            </ElFormItem>
-          </ElCol>
-
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.menuStatus')" prop="status">
-              <ElRadioGroup v-model="formData.status">
-                <ElRadio :value="true" label="启用" />
-                <ElRadio :value="false" label="禁用" />
-              </ElRadioGroup>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.keepAlive')" prop="keepAlive">
-              <ElRadioGroup v-model="formData.keepAlive">
-                <ElRadio :value="true" label="是" />
-                <ElRadio :value="false" label="否" />
-              </ElRadioGroup>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.constant')" prop="constant">
-              <ElRadioGroup v-model="formData.constant">
-                <ElRadio :value="true" label="是" />
-                <ElRadio :value="false" label="否" />
-              </ElRadioGroup>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.href')" prop="href">
-              <ElInput v-model="formData.href" :placeholder="$t('common.placeholder') + $t('menu.href')" />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.hideInMenu')" prop="hideInMenu">
-              <ElRadioGroup v-model="formData.hideInMenu">
-                <ElRadio :value="true" label="是" />
-                <ElRadio :value="false" label="否" />
-              </ElRadioGroup>
-            </ElFormItem>
-          </ElCol>
-
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.activeMenu')" prop="activeMenu">
-              <TreeSelect
-                v-model="formData.activeMenu as string"
-                :disabled="formData.hideInMenu"
-                :types="[MenuTypeEnum.Directory, MenuTypeEnum.Menu]"
-                val-key="name"
-                clearable
-                :placeholder="$t('common.placeholderSelect') + $t('menu.activeMenu')"
-              ></TreeSelect>
-            </ElFormItem>
-          </ElCol>
-
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.multiTab')" prop="multiTab">
-              <ElRadioGroup v-model="formData.multiTab">
-                <ElRadio :value="true" :label="$t('common.yesOrNo.yes')" />
-                <ElRadio :value="false" :label="$t('common.yesOrNo.no')" />
-              </ElRadioGroup>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="12">
-            <ElFormItem :label="$t('menu.fixedIndexInTab')" prop="fixedIndexInTab">
-              <ElInputNumber
-                v-model="formData.fixedIndexInTab"
-                class="w-full"
-                clearable
-                :placeholder="$t('common.placeholder') + $t('menu.fixedIndexInTab')"
-              />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="24">
-            <ElFormItem :label="$t('menu.query')" prop="query">
-              <ElButton v-if="formData.querys?.length === 0" class="w-full border-dashed" @click="addQuery(-1)">
-                <template #icon>
-                  <icon-carbon-add class="align-sub text-icon" />
+              >
+                <template #suffix>
+                  <SvgIcon v-if="formData.icon" :icon="formData.icon" class="text-icon" />
                 </template>
-                <span class="ml-8px">{{ $t('common.add') }}</span>
-              </ElButton>
-              <template v-else>
-                <div v-for="(item, index) in formData.querys" :key="index" class="flex gap-3">
-                  <ElCol :span="8">
-                    <ElFormItem :prop="['query', index.toString(), 'key']">
-                      <ElInput
-                        v-model="item.key"
-                        :placeholder="$t('common.placeholder') + $t('menu.queryKey')"
-                        class="flex-1"
-                      />
-                    </ElFormItem>
-                  </ElCol>
-                  <ElCol :span="8">
-                    <ElFormItem :prop="['query', index.toString(), 'value']">
-                      <ElInput
-                        v-model="item.value"
-                        :placeholder="$t('common.placeholder') + $t('menu.queryValue')"
-                        class="flex-1"
-                      />
-                    </ElFormItem>
-                  </ElCol>
-                  <ElCol :span="4">
-                    <ElSwitch
-                      v-model="item.status"
-                      class="ml-2"
-                      width="60"
-                      inline-prompt
-                      active-text="启用"
-                      inactive-text="禁用"
-                    />
-                  </ElCol>
-                  <ElCol :span="4">
-                    <ElSpace class="ml-12px">
-                      <ElButton @click="addQuery(index)">
-                        <template #icon>
-                          <icon-ic:round-plus class="align-sub text-icon" />
-                        </template>
-                      </ElButton>
-                      <ElButton @click="removeQuery(index)">
-                        <template #icon>
-                          <icon-ic-round-remove class="align-sub text-icon" />
-                        </template>
-                      </ElButton>
-                    </ElSpace>
-                  </ElCol>
-                </div>
+              </ElInput>
+            </template>
+            <template v-if="formData.iconType === IconTypeEnum.local">
+              <ElSelect
+                v-model="formData.localIcon as string"
+                :placeholder="$t('common.placeholder') + $t('menu.icon')"
+                clearable
+                filterable
+              >
+                <ElOption
+                  v-for="(item, index) in localIconOptions"
+                  :key="index"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                  <div class="flex-y-center gap-16px">
+                    <SvgIcon :local-icon="item.value" class="text-icon" />
+                    <span>{{ item.label }}</span>
+                  </div>
+                </ElOption>
+                <template #label="{ value }">
+                  <div class="flex items-center">
+                    <SvgIcon :local-icon="value" class="mr-1 text-icon" />
+                    <span>{{ value }}</span>
+                  </div>
+                </template>
+              </ElSelect>
+            </template>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem label="图标预览">
+            <div class="flex items-center gap-2">
+              <template v-if="formData.iconType === IconTypeEnum.iconify && formData.icon">
+                <SvgIcon :icon="formData.icon" class="text-24px" />
+                <span class="text-sm text-gray-500">{{ formData.icon }}</span>
               </template>
-            </ElFormItem>
-          </ElCol>
-        </ElRow>
-      </ElForm>
-    </ElScrollbar>
+              <template v-else-if="formData.iconType === IconTypeEnum.local && formData.localIcon">
+                <SvgIcon :local-icon="formData.localIcon" class="text-24px" />
+                <span class="text-sm text-gray-500">{{ formData.localIcon }}</span>
+              </template>
+              <span v-else class="text-sm text-gray-400">请选择图标</span>
+            </div>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.menuType')" prop="menuType">
+            <ElRadioGroup v-model="formData.menuType">
+              <ElRadio
+                v-for="item in getEnumValue(MenuTypeEnum).filter(item => item !== MenuTypeEnum.Query)"
+                :key="item"
+                :value="item"
+                :label="$t(MenuTypeEnum[item])"
+              />
+            </ElRadioGroup>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.page')" prop="page">
+            <ElInput
+              v-model="formData.component"
+              :placeholder="$t('common.placeholder') + $t('menu.page')"
+              :disabled="formData.menuType !== MenuTypeEnum.Menu"
+            />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.menuName')" prop="title" class="flex-center justify-around">
+            <ElInput
+              v-model="formData.title"
+              :placeholder="$t('common.placeholder') + $t('menu.menuName')"
+              class="flex-1"
+            />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.routeName')" prop="name">
+            <ElInput v-model="formData.name" :placeholder="$t('common.placeholder') + $t('menu.routeName')" />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.pathParam')" prop="pathParam">
+            <ElInput v-model="formData.pathParam" :placeholder="$t('common.placeholder') + $t('menu.pathParam')" />
+          </ElFormItem>
+        </ElCol>
+
+        <ElCol v-if="!formData.parentId" :span="12">
+          <ElFormItem :label="$t('menu.layout')" prop="layout">
+            <ElSelect v-model="formData.layout" clearable :placeholder="$t('common.placeholder') + $t('menu.layout')">
+              <ElOption
+                v-for="item in getEnumValue(LayoutTypeEnum)"
+                :key="item"
+                :value="item"
+                :label="$t(LayoutTypeEnum[item])"
+              ></ElOption>
+            </ElSelect>
+          </ElFormItem>
+        </ElCol>
+
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.order')" prop="order">
+            <ElInputNumber
+              v-model="formData.order"
+              class="w-full"
+              :placeholder="$t('common.placeholder') + $t('menu.order')"
+            />
+          </ElFormItem>
+        </ElCol>
+
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.menuStatus')" prop="status">
+            <ElRadioGroup v-model="formData.status">
+              <ElRadio :value="true" label="启用" />
+              <ElRadio :value="false" label="禁用" />
+            </ElRadioGroup>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.keepAlive')" prop="keepAlive">
+            <ElRadioGroup v-model="formData.keepAlive">
+              <ElRadio :value="true" label="是" />
+              <ElRadio :value="false" label="否" />
+            </ElRadioGroup>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.constant')" prop="constant">
+            <ElRadioGroup v-model="formData.constant">
+              <ElRadio :value="true" label="是" />
+              <ElRadio :value="false" label="否" />
+            </ElRadioGroup>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.href')" prop="href">
+            <ElInput v-model="formData.href" :placeholder="$t('common.placeholder') + $t('menu.href')" />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.hideInMenu')" prop="hideInMenu">
+            <ElRadioGroup v-model="formData.hideInMenu">
+              <ElRadio :value="true" label="是" />
+              <ElRadio :value="false" label="否" />
+            </ElRadioGroup>
+          </ElFormItem>
+        </ElCol>
+
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.activeMenu')" prop="activeMenu">
+            <TreeSelect
+              v-model="formData.activeMenu as string"
+              :disabled="formData.hideInMenu"
+              :types="[MenuTypeEnum.Directory, MenuTypeEnum.Menu]"
+              val-key="name"
+              clearable
+              :placeholder="$t('common.placeholderSelect') + $t('menu.activeMenu')"
+            ></TreeSelect>
+          </ElFormItem>
+        </ElCol>
+
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.multiTab')" prop="multiTab">
+            <ElRadioGroup v-model="formData.multiTab">
+              <ElRadio :value="true" :label="$t('common.yesOrNo.yes')" />
+              <ElRadio :value="false" :label="$t('common.yesOrNo.no')" />
+            </ElRadioGroup>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="$t('menu.fixedIndexInTab')" prop="fixedIndexInTab">
+            <ElInputNumber
+              v-model="formData.fixedIndexInTab"
+              class="w-full"
+              clearable
+              :placeholder="$t('common.placeholder') + $t('menu.fixedIndexInTab')"
+            />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="24">
+          <ElFormItem :label="$t('menu.query')" prop="query">
+            <ElButton v-if="formData.querys?.length === 0" class="w-full border-dashed" @click="addQuery(-1)">
+              <template #icon>
+                <icon-carbon-add class="align-sub text-icon" />
+              </template>
+              <span class="ml-8px">{{ $t('common.add') }}</span>
+            </ElButton>
+            <template v-else>
+              <div v-for="(item, index) in formData.querys" :key="index" class="flex gap-3">
+                <ElCol :span="8">
+                  <ElFormItem :prop="['query', index.toString(), 'key']">
+                    <ElInput
+                      v-model="item.key"
+                      :placeholder="$t('common.placeholder') + $t('menu.queryKey')"
+                      class="flex-1"
+                    />
+                  </ElFormItem>
+                </ElCol>
+                <ElCol :span="8">
+                  <ElFormItem :prop="['query', index.toString(), 'value']">
+                    <ElInput
+                      v-model="item.value"
+                      :placeholder="$t('common.placeholder') + $t('menu.queryValue')"
+                      class="flex-1"
+                    />
+                  </ElFormItem>
+                </ElCol>
+                <ElCol :span="4">
+                  <ElSwitch
+                    v-model="item.status"
+                    class="ml-2"
+                    width="60"
+                    inline-prompt
+                    active-text="启用"
+                    inactive-text="禁用"
+                  />
+                </ElCol>
+                <ElCol :span="4">
+                  <ElSpace class="ml-12px">
+                    <ElButton @click="addQuery(index)">
+                      <template #icon>
+                        <icon-ic:round-plus class="align-sub text-icon" />
+                      </template>
+                    </ElButton>
+                    <ElButton @click="removeQuery(index)">
+                      <template #icon>
+                        <icon-ic-round-remove class="align-sub text-icon" />
+                      </template>
+                    </ElButton>
+                  </ElSpace>
+                </ElCol>
+              </div>
+            </template>
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
+    </ElForm>
     <template #footer>
       <ElSpace :size="16" class="float-right">
         <ElButton @click="closeForm">{{ $t('common.cancel') }}</ElButton>

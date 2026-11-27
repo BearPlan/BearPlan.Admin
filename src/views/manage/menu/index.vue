@@ -243,7 +243,7 @@ const columns = ref<TableColumn[] | (Partial<TableColumnCtx<MenuTreeDTO>> & { ch
             @refresh="getData"
           >
             <!-- v-if="hasAuth(dbConfig.addUrl)" -->
-            <ElButton ghost type="primary" @click="openForm(null)">
+            <ElButton size="small" ghost type="primary" @click="openForm(null)">
               <template #icon>
                 <icon-ic-round-plus class="text-icon" />
               </template>
@@ -252,7 +252,7 @@ const columns = ref<TableColumn[] | (Partial<TableColumnCtx<MenuTreeDTO>> & { ch
             <!--       -->
             <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDelete(checkedRowKeys)">
               <template #reference>
-                <ElButton type="danger" plain :disabled="checkedRowKeys.length == 0">
+                <ElButton size="small" type="danger" plain :disabled="checkedRowKeys.length == 0">
                   <template #icon>
                     <icon-ic-round-delete class="text-icon" />
                   </template>

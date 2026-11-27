@@ -2,14 +2,15 @@
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import type { Sort, TableColumnCtx } from 'element-plus';
-import { ElButton, ElCard, ElPagination, ElPopconfirm, ElSpace, ElTable, ElTableColumn } from 'element-plus';
+import { ElButton, ElCard, ElPagination, ElPopconfirm, ElSpace, ElTable, ElTableColumn, ElTag } from 'element-plus';
 import Apis from '@/api';
 import type { DataScopeType, RoleDTO } from '@/api/globals';
-import type { TableColumn } from '@/typings/table';
-import type { OrderTypeEnum } from '@/api/apiEnums';
+import type { OrderTypeEnum, VersionEnum } from '@/api/apiEnums';
+import { VersionDisplay } from '@/api/apiEnumsDisplay';
 import { ConditionalType } from '@/api/sqlSugar';
 import downloadExcel from '@/utils/downloadExcel';
 import createComponent from '@/utils/createComponent';
+import type { TableColumn } from '@/typings/table';
 import { $t } from '@/locales';
 import CustomHeader from '@/components/advanced/custom-header.vue';
 import EditForm from './modules/edit-form.vue';
@@ -31,6 +32,19 @@ const dataScopeMap: Record<DataScopeType, string> = {
   5: '自定义'
 };
 
+// 端范围显示：端集合渲染为标签列表，flex gap 控制标签间距
+const formatVersions = (row: DataType) => {
+  return row.versions?.length ? (
+    <div class="flex flex-wrap gap-4px">
+      {row.versions.map(item => (
+        <ElTag size="small">{VersionDisplay[item as VersionEnum]}</ElTag>
+      ))}
+    </div>
+  ) : (
+    ''
+  );
+};
+
 // columnData 为生效列数据源（本地 defaultColumns 为唯一列定义），供列设置管理与表格渲染
 const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
   { prop: 'name', label: '角色名称', searchType: String(ConditionalType.Like), checked: true },
@@ -42,6 +56,13 @@ const columnData = ref<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>([
     // 枚举列不做表头搜索（无下拉选项支撑），formatter 渲染为本地映射文本
     formatter: row => dataScopeMap[row.dataScopeType]
   },
+  {
+    prop: 'versions',
+    label: '端范围',
+    checked: true,
+    // 枚举数组列不做表头搜索，formatter 渲染为端标签列表
+    formatter: row => formatVersions(row)
+  },
   { prop: 'description', label: '描述', searchType: String(ConditionalType.Like), checked: true }
 ]);
 const dataTableConfig = ref<UI.DataTableConfig>({
@@ -51,7 +72,6 @@ const dataTableConfig = ref<UI.DataTableConfig>({
 const searchParams = ref<Record<string, Record<string, string>>>({});
 // 多选行（表格 selection 列联动，供批量删除使用）
 const checkedRowKeys = ref<string[]>([]);
-
 
 // 渲染列：按列设置勾选过滤（全不勾选即空表）
 const tableColumns = computed<Array<Partial<TableColumnCtx<DataType> & TableColumn>>>(() => {
@@ -168,7 +188,7 @@ const openTreeForm = async (row: RoleDTO) => {
         <div class="flex items-center justify-between">
           <p>{{ $t(route.meta.i18nKey || route.meta.title || '') }}</p>
           <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
-            <ElButton ghost type="primary" @click="openForm(null)">
+            <ElButton size="small" ghost type="primary" @click="openForm(null)">
               <template #icon>
                 <icon-ic-round-plus class="text-icon" />
               </template>
@@ -176,7 +196,7 @@ const openTreeForm = async (row: RoleDTO) => {
             </ElButton>
             <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="handleDelete(checkedRowKeys)">
               <template #reference>
-                <ElButton type="danger" plain :disabled="checkedRowKeys.length === 0">
+                <ElButton size="small" type="danger" plain :disabled="checkedRowKeys.length === 0">
                   <template #icon>
                     <icon-ic-round-delete class="text-icon" />
                   </template>
@@ -184,13 +204,17 @@ const openTreeForm = async (row: RoleDTO) => {
                 </ElButton>
               </template>
             </ElPopconfirm>
-            <ElButton ghost @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))">
+            <ElButton
+              size="small"
+              ghost
+              @click="downloadExcel(tableRef?.$el, $t(route.meta.i18nKey || route.meta.title || ''))"
+            >
               <template #icon>
                 <icon-charm:download class="text-icon" />
               </template>
               {{ $t('导出') }}
             </ElButton>
-            <ElButton @click="reload">
+            <ElButton size="small" @click="reload">
               <template #icon>
                 <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': loading }" />
               </template>

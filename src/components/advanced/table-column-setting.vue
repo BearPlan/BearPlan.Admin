@@ -13,7 +13,7 @@ const columns = defineModel<Array<Partial<TableColumn>>>('columns', {
 <template>
   <ElPopover v-if="columns != null" placement="bottom-end" trigger="click">
     <template #reference>
-      <ElButton>
+      <ElButton size="small">
         <template #icon>
           <icon-ant-design-setting-outlined class="text-icon" />
         </template>
